@@ -1,0 +1,3 @@
+C:/Users/yotamg/Desktop/Yotam/Computer Science/מעבדה בתכנות מערכות/Ubuntu16.04-OpenU (1)/Shared Folder/final_project/out/build/x64-Debug/CMakeFiles/final_project.dir
+C:/Users/yotamg/Desktop/Yotam/Computer Science/מעבדה בתכנות מערכות/Ubuntu16.04-OpenU (1)/Shared Folder/final_project/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/yotamg/Desktop/Yotam/Computer Science/מעבדה בתכנות מערכות/Ubuntu16.04-OpenU (1)/Shared Folder/final_project/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir

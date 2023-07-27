@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "xmemory": "c",
+        "atomic": "c",
+        "bit": "c",
+        "compare": "c",
+        "cstddef": "c",
+        "iterator": "c",
+        "limits": "c",
+        "memory": "c",
+        "system_error": "c",
+        "type_traits": "c",
+        "xiosbase": "c",
+        "xlocale": "c",
+        "xstring": "c",
+        "xutility": "c",
+        "symbol_dict.h": "c",
+        "pre_assembler.h": "c",
+        "first_pass.h": "c"
+    }
+}
