@@ -14,7 +14,7 @@
 typedef struct macro_node {
     struct macro_node *next; /**< Pointer to the next macro node in the list. */
     char name[MAX_MACRO]; /**< The name of the macro. */
-    char *def; /**< The definition of the macro. */
+    char *body; /**< The body of the macro. */
 } macro_node;
 
 /**
@@ -45,9 +45,9 @@ macro_node *find_macro(macro_node *head, char *name);
  *
  * @param head A pointer to the head of the macro list.
  * @param name The name of the macro to add.
- * @param def The definition of the macro to add.
+ * @param body The body of the macro to add.
  */
-void add_macro(macro_node **head, char *name, char *def);
+void add_macro(macro_node **head, char *name, char *body);
 
 /**
  * @brief Allocates memory for an array of elements, initialized to zero.
@@ -77,6 +77,6 @@ void *validate_malloc(size_t size);
  *
  * @param head The head of the macro list to free.
  */
-void free_list(macro_node *head);
+void free_macro_list(macro_node *head);
 
 #endif

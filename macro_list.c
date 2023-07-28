@@ -18,13 +18,25 @@ macro_node *find_macro(macro_node *head, char *name)
 }
 
 /* Functions */
-void add_macro(macro_node **head, char *name, char *def)
+void add_macro(macro_node **head, char *name, char *body)
 {
     macro_node *new = new_macro();
     strcpy(new->name, name);
-    new->def = def;
+    new->body = body;
     new->next = *head;
     *head = new;
+}
+void free_macro_list(macro_node *head)
+{
+
+    while(head)
+    {
+        macro_node *tmp = head;
+        head = head->next;
+        free(tmp->body);
+        free(tmp);
+
+    }
 }
 void *validate_calloc(size_t nitems, size_t size)
 {
