@@ -105,10 +105,15 @@ FILE *pre_assembler(char *file_name) {
     rewind(dest_file);
     fclose(input_file);
     free_dictionary(macros);
-    if(!eror_in_macro)
+    if(!eror_in_macro && !(*macro_name))
         return dest_file;
+    if(*macro_name)
+    {
+           printf("\nErrors in file: %s. There is definition of mcro but not \"end mcro\" command.\n",input_file_name);
+	   printf("So we will not create an \"am\" file.\n\n");
+    }
     if(remove(dest_file_name))
-        printf("There is an eror in macro, but could not destroy the \"am\" file.");
+        printf("\nThere is an eror in macro, but could not destroy the \"am\" file.\n");
     return NULL;
 }
 
