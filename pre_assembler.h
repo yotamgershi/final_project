@@ -50,9 +50,27 @@ char *add_suffix(char *file_name, char *suffix);
  *
  * @param input_file The input file to read from.
  * @param start_pos The starting position to begin calculating the length.
+ * @param the curenet line
+
  * @return The length of the macro definition in bytes.
  */
-size_t calculate_macro_length(FILE *input_file, fpos_t start_pos);
+size_t calculate_macro_length(FILE *input_file, fpos_t start_pos,char line[]);
+/**
+ * @brief cheak if a given string is instruction word
+ *
+ * 
+ * @param str The to cheak 
+ * @return true(1) or false(0) as needed 
+ */
+int is_instruction(char * str);
+/**
+ * @brief cheak if we have corect definition of macro
+ *
+ * 
+ * @param token the macro name 
+ * @return true(1) or false(0) as needed 
+ */
+int valid_macro_def(char * token);
 
 /**
  * @brief A boolean data type representing true or false values.

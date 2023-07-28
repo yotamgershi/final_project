@@ -3,6 +3,7 @@
 
 #include "macro_list.h"
 #include <ctype.h>
+#define NUM_OF_LETTERS 26
 
 /**
  * @struct macro_dict
@@ -12,7 +13,7 @@
  * The hash table is implemented as an array of macro_node pointers, where each index represents a hash bucket.
  */
 typedef struct macro_dict {
-    macro_node *dict[26]; /**< The hash table array of macro_node pointers (hash buckets). */
+    macro_node *dict[NUM_OF_LETTERS]; /**< The hash table array of macro_node pointers (hash buckets). */
 } macro_dict;
 
 /**
@@ -25,9 +26,9 @@ typedef struct macro_dict {
  *
  * @param macros A pointer to the macro dictionary.
  * @param name The name of the macro to insert.
- * @param def The definition of the macro to insert.
+ * @param body The body of the macro to insert.
  */
-void insert_macro_dict(macro_dict *macros, char *name, char *def);
+void insert_macro_dict(macro_dict *macros, char *name, char *body);
 
 /**
  * @brief Finds a macro definition in the macro dictionary by its name.
@@ -41,5 +42,6 @@ void insert_macro_dict(macro_dict *macros, char *name, char *def);
  * @return A pointer to the macro node if found, or NULL if not found.
  */
 macro_node *find_macro_dict(macro_dict *macros, char *name);
+void free_dictionary(macro_dict *macros);
 
 #endif
