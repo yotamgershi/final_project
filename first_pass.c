@@ -2,16 +2,18 @@
 
 symbol_dict *first_pass(pre_assembled_file) /* TODO: change FILE *first_pass_file to dict *symbol_table */
 {
+    int line_number = 0;
     char line[MAX_LINE];
     while(fgets(line, MAX_LINE, pre_assembled_file));
-        if (validate_line(line))
+        if (validate_line(line, line_number))
             /* do */
+        line_number++;
     return NULL;
 }
 
 boolean validate_line(char *line, int line_number)
 {
-    int cmd_index;
+    int cmd_index, op_amount;
     char copy_line[MAX_LINE], *token;
     strcpy(copy_line, line);
     token = strtok(copy_line, DELIMITER);
@@ -45,4 +47,25 @@ boolean is_empty_or_comment_line(char* first_word)
 void warning(int line_number)
 {
 
+}
+
+int valid_op_amount(char *line)
+{
+    int count_op(char *line) {
+    int count = 0;
+    char *ptr = line;
+    int comma_encountered = 0;
+
+    while (*ptr != '\n' && *ptr != '\0') {
+        if (*ptr == ',') {
+            comma_encountered = 1;
+        } else if (*ptr != ' ' && comma_encountered) {
+            count++;
+            comma_encountered = 0;
+        }
+        ptr++;
+    }
+
+    return count;
+}
 }
