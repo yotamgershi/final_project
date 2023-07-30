@@ -28,34 +28,23 @@ FILE *pre_assembler(char *file_name) {
 
     while (fgets(line, MAX_LINE, input_file))
     {
-        if(strlen(line) ==  MAX_LINE -1 && !(*macro_name))/*if line is too long we copy it entierly to am file, and F-P will handle*/
-	{
-		if(line[MAX_LINE -1] != '\n')/*maybe not too long after all..need to cheak */
-		{	
-			while(strlen(line) ==  MAX_LINE -1)
-			{
-			    fprintf(dest_file, "%s", line);
-			    if(line[MAX_LINE -1] != '\n') /*not the end of the line, cuntinue to read the line */
-		                 fgets(line, MAX_LINE, input_file);
-			    else
-				 break;
-			}
-			if(strlen(line) < MAX_LINE -1)
-			     fprintf(dest_file, "%s", line);
-			continue;
-		}
-		
-
-	}
+        
+        
         line_number++;
+        if((strlen(line) ==  MAX_LINE -1) && (line[MAX_LINE -1] != '\n') && !(*macro_name)) /*if line is too long copy it to am file, and F-P will handle*/
+        {
+
+	    print_long_line(input_file,dest_file,line);
+            continue;
+        }
+
         strcpy(copy_line, line);
         token = strtok(line, DELIMITER);
-        if (!token)
+        if (!token)  /*dont copy empty line*/
             continue;
-        if (!strcmp(token, "mcro") && !(*macro_name))
+        if (!strcmp(token, "mcro") && !(*macro_name)) /*starting definition of mcro*/
         {
-            token = strtok(NULL, DELIMITER);
-            if (! valid_macro_def(token))
+            if (! valid_macro_def(copy_line))
             {
 		if(!eror_in_macro)
                     printf("Errors in file: %s, so we will not create an \"am\" file.\n\n",input_file_name);
@@ -63,9 +52,9 @@ FILE *pre_assembler(char *file_name) {
                 printf("ERROR: macro definition not valid in line %d.\n", line_number);
 		printf("The line was: %s", copy_line);
 		printf("We assume that valid def of macro is: start with a letter, max 31 char, and not a saved word.\n \n");
-                continue;
             }
-            strcpy(macro_name, token);
+            else 
+                strcpy(macro_name, token);
 
         }
         else if (*macro_name && strcmp(token, "endmcro"))
@@ -82,11 +71,26 @@ FILE *pre_assembler(char *file_name) {
             }
             else
                 strcat(macro_body, copy_line);
+            if((strlen(line) ==  MAX_LINE -1) && (line[MAX_LINE -1] != '\n'))
+            {
+               fgets(line, MAX_LINE, input_file);
+               while(strlen(line) ==  MAX_LINE -1)
+               {
+                   strcpy(macro_body, copy_line);
+                   if(line[MAX_LINE -1] != '\n') /*not the end of the line, cuntinue to read the line */
+                       fgets(line, MAX_LINE, input_file);
+                   else
+	               break;
+
+               }
+               if(strlen(line) < MAX_LINE -1)
+                   strcpy(macro_body, copy_line);
+            }
         }
         else if (!strcmp(token, "endmcro") && *macro_name )
         {
 	    token = strtok(NULL, DELIMITER);
-	    if( token != NULL )/* something after endmacro, so its not the endmacro */
+	    if( token != NULL )/* something after endmacro, so its not "the" endmacro */
 	    {
 	         strcat(macro_body, copy_line);  /* Therefor we put the line in the macro's body */
 		 continue;
@@ -96,8 +100,13 @@ FILE *pre_assembler(char *file_name) {
             *macro_name = 0;
             macro_body = NULL;
         }
-        else if ((cur = find_macro_dict(macros, token))) {
-            fprintf(dest_file,"%s", cur->body);
+        else if ((cur = find_macro_dict(macros, token)))
+        {
+            token = strtok(NULL, DELIMITER);
+            if(token == NULL)
+                fprintf(dest_file,"%s", cur->body);
+            else /* something after mcro name, so its not corect use of mcro */
+                fprintf(dest_file, "%s", copy_line);
         }
         else
             fprintf(dest_file, "%s", copy_line);
@@ -133,14 +142,26 @@ char *add_suffix(char *file_name, char *suffix) {
     strcat(new_name, suffix);
     return new_name;
 }
+void print_long_line(FILE * input_file, FILE * dest_file,char *line)
+{
+    while(strlen(line) ==  MAX_LINE -1)
+    {
+        fprintf(dest_file, "%s", line);
+        if(line[MAX_LINE -1] != '\n') /*not the end of the line, cuntinue to read the line */
+           fgets(line, MAX_LINE, input_file);
+        else
+	   break;
+    }
+    if(strlen(line) < MAX_LINE -1)
+       fprintf(dest_file, "%s", line);
+}
+
 
 size_t calculate_macro_length(FILE *input_file, fpos_t start_pos,char line[])
 {
     
     char *token;
     size_t length = 0;
-
-
 
     do
     {
@@ -155,17 +176,19 @@ size_t calculate_macro_length(FILE *input_file, fpos_t start_pos,char line[])
     return length;
 }
 
-int valid_macro_def(char * token) /* recive pointer to tokens of macro def, and return 1 if valid or 0 else. */
+int valid_macro_def(char * line) /* recive pointer to a line of macro def, and return 1 if valid or 0 else. */
 {
+	char * token;
+        token = strtok(line, DELIMITER); /* token="mcro" */
+        token = strtok(NULL, DELIMITER); /* token= maco name */
 
 	if(!token) /* no macro name */
 		return false;
 	if(!isalpha(*token) || is_instruction(token) || strlen(token)>MAX_MACRO) /* doesn't start with a letter or its instruction or macro name too long */
 		return false;
-	token = strtok(NULL, DELIMITER);
+        token = strtok(NULL, DELIMITER);
 	if( token != NULL ) /* something after macro name*/
 		return false;	
-
 	return true;
 }
 int is_instruction(char * str)
