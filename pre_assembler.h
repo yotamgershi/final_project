@@ -64,17 +64,18 @@ size_t calculate_macro_length(FILE *input_file, fpos_t start_pos,char line[]);
  */
 int is_instruction(char * str);
 /**
- * @brief cheak if we have corect definition of macro
+ * @brief cheak if we have corect definition of mcro
  *
  * 
- * @param token the macro name 
+ * @param line the line where the mcro declerd
  * @return true(1) or false(0) as needed 
  */
-int valid_macro_def(char * token);
+int valid_macro_def(char * line);
 
 /**
  * @brief A boolean data type representing true or false values.
  */
+void print_long_line(FILE * input_file, FILE * dest_file,char *line);
 typedef enum {
     false,
     true
