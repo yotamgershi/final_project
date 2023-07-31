@@ -6,7 +6,7 @@
 #include <string.h>
 #include "macro_dict.h"
 
-#define MAX_LINE 81
+#define MAX_LINE 82
 #define DELIMITER " \n\t"
 
 /**
