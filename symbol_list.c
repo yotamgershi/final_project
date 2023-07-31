@@ -19,13 +19,14 @@ symbol_node *find_symbol(symbol_node *head, char *name)
     return NULL;
 }
 
-void add_symbol(symbol_node **head, char *name, int address, boolean is_data, boolean is_entry)
+void add_symbol(symbol_node **head, char *name, int address, int line, boolean is_extern, boolean is_entry)
 {
     symbol_node *new = new_symbol();
     strcpy(new->name, name);
     new->next = *head;
     new->address = address;
-    new->is_data = is_data;
+    new->line = line;
+    new->is_extern = is_extern;
     new->is_entry = is_entry;
     *head = new;
 }
