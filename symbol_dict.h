@@ -15,19 +15,9 @@ typedef struct symbol_dict {
     symbol_node *dict[26]; /**< The hash table array of symbol_node pointers (hash buckets). */
 } symbol_dict;
 
-/**
- * @brief Inserts a new symbol into the symbol dictionary.
- *
- * This function inserts a new symbol into the symbol dictionary.
- * It calculates the hash value for the symbol name to determine the appropriate hash bucket in the hash table.
- * If the symbol with the given name already exists in the dictionary, the new definition is appended to the existing symbol.
- * If the symbol does not exist, a new symbol node is created and added to the corresponding hash bucket.
- *
- * @param symbols A pointer to the symbol dictionary.
- * @param name The name of the symbol to insert.
- * @param def The definition of the symbol to insert.
- */
-void insert(symbol_dict *symbols, char *name, char *def);
+
+void insert(symbol_dict *symbols, char *name, int address, int line, boolean is_extern, boolean is_entry);
+
 
 /**
  * @brief Finds a symbol in the symbol dictionary by its name.
