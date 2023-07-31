@@ -20,7 +20,8 @@ typedef struct symbol_node {
     struct symbol_node *next; /**< Pointer to the next symbol in the list. */
     char name[MAX_SYMBOL]; /**< The name of the symbol. */
     int address; /**< The address associated with the symbol. */
-    boolean is_data; /**< Flag indicating whether the symbol is a data symbol (TRUE) or not (FALSE). */
+    int line;    /**< The line in "am" file of the symbol. */
+    boolean is_extern; /**< Flag indicating whether the symbol is a extern symbol (TRUE) or not (FALSE). */
     boolean is_entry; /**< Flag indicating whether the symbol is an entry symbol (TRUE) or not (FALSE). */
 } symbol_node;
 
@@ -53,10 +54,10 @@ symbol_node *find_symbol(symbol_node *head, char *name);
  * @param head A pointer to the head of the symbol list.
  * @param name The name of the symbol to add.
  * @param address The address associated with the symbol.
- * @param is_data A boolean value indicating whether the symbol is a data symbol (TRUE) or not (FALSE).
+ * @param is_data A boolean value indicating whether the symbol is a extern symbol (TRUE) or not (FALSE).
  * @param is_entry A boolean value indicating whether the symbol is an entry symbol (TRUE) or not (FALSE).
  */
-void add_symbol(symbol_node **head, char *name, int address, boolean is_data, boolean is_entry);
+void add_symbol(symbol_node **head, char *name, int address, int line, boolean is_extern, boolean is_entry);
 
 /**
  * @brief Allocates memory for an array of elements, initialized to zero.
