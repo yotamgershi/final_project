@@ -40,6 +40,7 @@ FILE *pre_assembler(char *file_name) {
 
         strcpy(copy_line, line);
         token = strtok(line, DELIMITER);
+
         if (!token)  /*dont copy empty line*/
             continue;
         if (!strcmp(token, "mcro") && !(*macro_name)) /*starting definition of mcro*/
@@ -53,13 +54,16 @@ FILE *pre_assembler(char *file_name) {
 		printf("The line was: %s", copy_line);
 		printf("We assume that valid def of macro is: start with a letter, max 31 char, and not a saved word.\n \n");
             }
-            else 
-                strcpy(macro_name, token);
-
+            else
+               {
+                   token = strtok(copy_line, DELIMITER);
+                   token = strtok(NULL, DELIMITER);
+                   strcpy(macro_name, token);
+               }
         }
         else if (*macro_name && strcmp(token, "endmcro"))
         {
-
+            
             if (!macro_body)
             {
                 fgetpos(input_file, &start_pos);
@@ -77,7 +81,7 @@ FILE *pre_assembler(char *file_name) {
                while(strlen(line) ==  MAX_LINE -1)
                {
                    strcpy(macro_body, copy_line);
-                   if(line[MAX_LINE -1] != '\n') /*not the end of the line, cuntinue to read the line */
+                   if(line[MAX_LINE -1] != '\n') /*not the end of the line, cuntinue to read the line */ 
                        fgets(line, MAX_LINE, input_file);
                    else
 	               break;
@@ -89,6 +93,7 @@ FILE *pre_assembler(char *file_name) {
         }
         else if (!strcmp(token, "endmcro") && *macro_name )
         {
+            
 	    token = strtok(NULL, DELIMITER);
 	    if( token != NULL )/* something after endmacro, so its not "the" endmacro */
 	    {
@@ -178,8 +183,9 @@ size_t calculate_macro_length(FILE *input_file, fpos_t start_pos,char line[])
 
 int valid_macro_def(char * line) /* recive pointer to a line of macro def, and return 1 if valid or 0 else. */
 {
-	char * token;
-        token = strtok(line, DELIMITER); /* token="mcro" */
+	char *token,copy_line[MAX_LINE];
+        strcpy(copy_line, line);
+        token = strtok(copy_line, DELIMITER); /* token="mcro" */
         token = strtok(NULL, DELIMITER); /* token= maco name */
 
 	if(!token) /* no macro name */
@@ -200,6 +206,4 @@ int is_instruction(char * str)
 		return true;
 	return false;
 }
-
- 
 
