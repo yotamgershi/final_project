@@ -16,7 +16,7 @@ int is_entry(char * line);
 void get_label_name(char * line,char * name,int internal);
 void is_repeat_def(symbol_node *current_nude,int line_number,int externl,int internal,int *error_first_pass,int DC, int IC, int dc);
 int is_label_line(char *line);
-void insert_extern(symbol_node *symbol_table,char *line,int line_number,int *error_first_pass);
+void insert_extern(symbol_dict *symbol_table,char *line,int line_number,int *error_first_pass);
 int count_data(char *line);
 int count_instructions(char *line);
 
