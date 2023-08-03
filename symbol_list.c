@@ -3,7 +3,7 @@
 /* Structurs */
 symbol_node *new_symbol()
 {
-    return (symbol_node*)validate_calloc(1, sizeof(symbol_node));
+    return (symbol_node*)validate_calloc_symbol(1, sizeof(symbol_node));
 }
 
 /* Functions */
@@ -19,7 +19,7 @@ symbol_node *find_symbol(symbol_node *head, char *name)
     return NULL;
 }
 
-void add_symbol(symbol_node **head, char *name, int address, int line, is_extern,int is_entry,int is_data)
+void add_symbol(symbol_node **head, char *name, int address, int line,int is_extern,int is_entry,int is_data)
 {
     symbol_node *new = new_symbol();
     strcpy(new->name, name);
@@ -31,7 +31,7 @@ void add_symbol(symbol_node **head, char *name, int address, int line, is_extern
      new->is_data = is_data;
     *head = new;
 }
-void *validate_calloc(size_t nitems, size_t size)
+void *validate_calloc_symbol(size_t nitems, size_t size)
 {
     void *mem = calloc(nitems, size);
     if (!mem)
@@ -42,7 +42,7 @@ void *validate_calloc(size_t nitems, size_t size)
     return mem;
 }
 
-void *validate_malloc(size_t size)
+void *validate_malloc_symbol(size_t size)
 {
     void *mem = malloc(size);
     if (!mem)
