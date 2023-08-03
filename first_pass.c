@@ -35,7 +35,7 @@ symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_fir
 		        else if(internal)
                             insert(symbol_table, label_name, -1, line_number,externl, internal,false);
                         else /* externl */
-                            insert_extern(symbol_table,line,line_number,error_first_pass) /*could be number of label in line */
+                            insert_extern(symbol_table,line,line_number,error_first_pass); /*could be number of label in line */
                     }
 		    else 
                         is_repeat_def(current_nude,line_number,externl,internal,error_first_pass,*DC,*IC,dc);	
@@ -50,7 +50,7 @@ symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_fir
             *error_first_pass=true;
         line_number++;       
     }
-    return symbol_dict;
+    return symbol_table;
 }
 
 int validate_line(char *line, int line_number)
@@ -162,12 +162,12 @@ bool is_length_valid(char *line)
 
 int is_valid_length(char *line,int line_number,FILE *pre_assembled_file)
 {
-    if(strlen(line) ==  MAX_LINE -1) && (line[MAX_LINE -1] != '\n')
+    if((strlen(line) ==  MAX_LINE -1) && (line[MAX_LINE -1] != '\n'))
     {
         while(strlen(line) ==  MAX_LINE -1)
         {
             if(line[MAX_LINE -1] != '\n') /*not the end of the line, cuntinue to read the line */
-                fgets(line, MAX_LINE, input_file);
+                fgets(line, MAX_LINE, pre_assembled_file);
             else
 	       break;
         }
@@ -280,7 +280,7 @@ int is_label_line(char *line)
 }
 
 
-void insert_extern(symbol_node *symbol_table,char *line,int line_number,int *error_first_pass)
+void insert_extern(symbol_dict *symbol_table,char *line,int line_number,int *error_first_pass)
 {
     char copy_line[MAX_LINE], *label_name;
     symbol_node *current_nude;
@@ -310,7 +310,7 @@ int count_data(char *line)
     
     if(token[strlen(token) -1] == ':') /* If token=lable: */
         token = strtok(NULL, " ,\n\t");
-    if(!strcmp(token, ".data")
+    if(!strcmp(token, ".data"))
     {
         token = strtok(NULL, " ,\n\t"); /* token=first intger  */
         while(token)
@@ -319,7 +319,7 @@ int count_data(char *line)
             token = strtok(NULL, " ,\n\t"); /* token=next intger  */
         }
     }
-    if(!strcmp(token, ".string")
+    if(!strcmp(token, ".string"))
     {
          
          while(line[i++] != '"'); /* now line[i] = first char in the string */
@@ -346,24 +346,24 @@ int count_instructions(char *line)
     for(i=0; i<16; i++)
         if(!strcmp(token, instruction_table[i]))
         {
-            ic++
+            ic++;
             token = strtok(NULL, " ,\n\t");
             if(token) /* if there is oprend */
             {
                 if(token[0]=='@') /* token=rejster*/
                 {
-                    ic++                          /* need word for the rejester source*/
+                    ic++;                          /* need word for the rejester source*/
                     token = strtok(NULL, " ,\n\t");
                     if(token)                   /* if there is more then one oprend */
                         if(token[0]!='@')      /* and the second oprend isn't also a rejester need more word*/
-                            ic++
+                            ic++;
                 }
                 else /* token is not a rejster*/
                 {
-                    ic++
+                    ic++;
                     token = strtok(NULL, " ,\n\t");
                     if(token) /* if there is more then one oprend */
-                        ic++
+                        ic++;
                 }
             }
             return ic;
