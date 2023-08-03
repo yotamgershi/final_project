@@ -70,7 +70,7 @@ void add_symbol(symbol_node **head, char *name, int address, int line, int is_ex
  * @param size The size of each element in bytes.
  * @return A pointer to the allocated memory, or NULL if allocation fails.
  */
-void *validate_calloc(size_t nitems, size_t size);
+void *validate_calloc_symbol(size_t nitems, size_t size);
 
 /**
  * @brief Allocates memory for a single element, initialized to zero.
@@ -80,7 +80,7 @@ void *validate_calloc(size_t nitems, size_t size);
  * @param size The size of the element in bytes.
  * @return A pointer to the allocated memory, or NULL if allocation fails.
  */
-void *validate_malloc(size_t size);
+void *validate_malloc_symbol(size_t size);
 
 /**
  * @brief Frees the memory occupied by the symbol list.
