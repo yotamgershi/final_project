@@ -1,48 +1,52 @@
 #include "first_pass.h"
 
-symbol_dict *first_pass(pre_assembled_file) /* TODO: change FILE *first_pass_file to dict *symbol_table */
+symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_first_pass)
 {
-    int line_number = 0,DC=0,IC=0; /* DC,IC will have to be poinnter from main*/
+    int line_number = 0; 
     int ic,dc; /* count current number instruction/data */
     char line[MAX_LINE];
-    char lable_name[MAX_SYMBOL];
+    char label_name[MAX_SYMBOL];
     int internal,externl;
-    int error_first_pass=false;
-    symbol_node *current_nude,*symbol_table;
+    symbol_node *current_nude;
+    symbol_dict *symbol_table;
+
     symbol_table=NULL;
     current_nude=NULL;
+
     while(fgets(line, MAX_LINE, pre_assembled_file));
         if (validate_line(line, line_number))
         {
-            ic=count_instructions(line); /* NEET TO WRITE H */
-            dc=count_data(line);        /* NEET TO WRITE H */
-            if(is_lable(line))         /* not including lable befor entry/extern */
+            ic=count_instructions(line);
+            dc=count_data(line);        
+            if(is_label_line(line))         /* not including label befor entry/extern */
             {
 		externl = is_extern(line);                            
 		internal = is_entry(line);                           
-                get_lable_name(line,lable_name,internal); /* lable name of external will be ".extern" so allways go to insert_extern */
-		if((current_nude=find(symbol_table, lable_name)) == NULL) 
+                get_label_name(line,label_name,internal); /* label name of external will be ".extern" so allways go to insert_extern */
+		if((current_nude=find(symbol_table, label_name)) == NULL) 
                 {
-                    if(!internal && !externl)
-                        insert(symbol_table, lable_name, DC+IC, line_number,externl, internal);
+                    if(!internal && !externl && dc)
+                        insert(symbol_table, label_name, *DC+100, line_number,externl, internal,true);
+                    else if(!internal && !externl && !dc)
+                        insert(symbol_table, label_name,*IC+100, line_number,externl, internal,false);    
 		    else if(internal)
-                        insert(symbol_table, lable_name, -1, line_number,externl, internal);
+                        insert(symbol_table, label_name, -1, line_number,externl, internal,false);
                     else /* externl */
-                        insert_extern(symbol_table,line,line_number,&error_first_pass) /*could be number of lable in line */
+                        insert_extern(symbol_table,line,line_number,error_first_pass) /*could be number of label in line */
                 }
 		else 
-                    is_repeat_def(current_nude,line_number,externl,internal,&error_first_pass);	
+                    is_repeat_def(current_nude,line_number,externl,internal,error_first_pass,*DC,*IC,dc);	
             }
-            IC+=ic;
-	    DC+=dc;
+            *IC+=ic;
+	    *DC+=dc;
         }
         else
-            error_first_pass=true;
+            *error_first_pass=true;
         line_number++;
-    return NULL;
+    return symbol_dict;
 }
 
-boolean validate_line(char *line, int line_number)
+int validate_line(char *line, int line_number)
 {
     int cmd_index, op_amount;
     char copy_line[MAX_LINE], *token;
@@ -139,15 +143,7 @@ bool is_length_valid(char *line)
         return false;
 }
 
-
-
-
-
-
-
 /* HILLEL FONCTIONS ALL FONCTION ASSUME LINE IS CORRECT */
-
-
 int is_extern(char * line)
 {
 
@@ -170,7 +166,7 @@ int is_entry(char * line)
     return true;
 }
 
-void get_lable_name(char * line,char * name,int internal)
+void get_label_name(char * line,char * name,int internal)
 {
     char copy_line[82], *token;
     strcpy(copy_line, line);
@@ -182,7 +178,7 @@ void get_lable_name(char * line,char * name,int internal)
     strcpy(name, token);
 }
 
-void is_repeat_def(symbol_node *current_nude,int line_number,int externl,int internal,int *error_first_pass)
+void is_repeat_def(symbol_node *current_nude,int line_number,int externl,int internal,int *error_first_pass,int DC, int IC, int dc)
 {
     if( (current_nude->address) > 0) /* MAYBE TO ADD CHKE IF (current_nude->is_entry = true) */
     {
@@ -203,14 +199,31 @@ void is_repeat_def(symbol_node *current_nude,int line_number,int externl,int int
         printf("ERROR in line: %d symbol: %s is already defined as extern in line: %d", line_number, current_nude->name,current_nude->line);
         *error_first_pass=true;
     }
-    else
+    else if(externl && (current_nude->is_entry))
     {
         printf("ERROR in line: %d symbol: %s is already defined as entry in line: %d", line_number, current_nude->name,current_nude->line);
         *error_first_pass=true;
+    }
+    else /* externl=internal=false */
+    {
+        if(current_nude->is_extern)
+        {
+            printf("ERROR in line: %d symbol: %s is already defined as extern in line: %d", line_number, current_nude->name,current_nude->line);
+            *error_first_pass=true;
+        }
+        else /* current_nude->is_entry = true. NOW the definition of the address lable that defined already as entry*/
+        {
+            if(dc)
+                current_nude->address=DC+100;
+            else
+                current_nude->address=IC+100;
+            current_nude->is_data=dc;     
+        }
+    
     }       
 }
 
-int is_lable(char *line)
+int is_label_line(char *line)
 {
     char copy_line[MAX_LINE], *token;
     strcpy(copy_line, line);
@@ -218,10 +231,10 @@ int is_lable(char *line)
 
     if(is_entry(line) || is_extern(line)) /* line has the form: ".entry " or ".entry " */
         return true;
-    if(token[strlen(token) -1] != ':') /* line is not: "lable: " nor the above form, so no lable */
+    if(token[strlen(token) -1] != ':') /* line is not: "label: " nor the above form, so no lable */
         return false;
     token = strtok(NULL, " \n\t");
-    if(!strcmp(token, ".extern") || !strcmp(token, ".entry")) /* line is: "lable: .entry " or "lable: .extern "*/
+    if(!strcmp(token, ".extern") || !strcmp(token, ".entry")) /* line is: "label: .entry " or "lable: .extern "*/
         return false;
     return true;
 }
@@ -229,21 +242,117 @@ int is_lable(char *line)
 
 void insert_extern(symbol_node *symbol_table,char *line,int line_number,int *error_first_pass)
 {
-    char copy_line[MAX_LINE], *lable_name;
+    char copy_line[MAX_LINE], *label_name;
     symbol_node *current_nude;
 
     strcpy(copy_line, line);
-    lable_name = strtok(copy_line, " ,\n\t"); /* now lable_name = .extern */
-    lable_name = strtok(NULL, " ,\n\t");     /* now lable_name = first lable in line */
-    while(lable_name)
+    label_name = strtok(copy_line, " ,\n\t"); /* now label_name = .extern */
+    label_name = strtok(NULL, " ,\n\t");     /* now label_name = first label in line */
+    while(label_name)
     {
-        if((current_nude=find(symbol_table, lable_name)) == NULL)
-            insert(symbol_table, lable_name, -1, line_number,true, false);
+        if((current_nude=find(symbol_table, label_name)) == NULL)
+            insert(symbol_table, label_name, -1, line_number,true, false,false); /* extern=true,enternl=false,is_data=false*/
         else
-            is_repeat_def(current_nude,line_number,externl,internal,error_first_pass);
-        lable_name = strtok(NULL, " ,\n\t");
+            is_repeat_def(current_nude,line_number,true,false,error_first_pass,0,0,0); /* extern=true,enternl=false, and DC,IC,dc has no meaning so 0*/
+        label_name = strtok(NULL, " ,\n\t");
     }
 }
+
+
+int count_data(char *line)
+{
+    
+    int dc=0;
+    int i=0; 
+    char copy_line[MAX_LINE], *token;
+    strcpy(copy_line, line);
+    token = strtok(copy_line, " ,\n\t");
+    
+    if(token[strlen(token) -1] == ':') /* If token=lable: */
+        token = strtok(NULL, " ,\n\t");
+    if(!strcmp(token, ".data")
+    {
+        token = strtok(NULL, " ,\n\t"); /* token=first intger  */
+        while(token)
+        {
+            dc++;
+            token = strtok(NULL, " ,\n\t"); /* token=next intger  */
+        }
+    }
+    if(!strcmp(token, ".string")
+    {
+         
+         while(line[i++] != '"'); /* now line[i] = first char in the string */
+         while(line[i++] != '"')
+             dc++;
+         dc++; /* for the /0 char */
+    }
+
+    return dc;
+}
+
+
+
+int count_instructions(char *line)
+{
+    int ic=0;
+    int i=0; 
+    char  instruction_table[16][5] = {"mov","cmp","add","sub","not","clr","lea","inc","dec","jmp","bne","red","prn","jsr","rts","stop"};
+    char copy_line[MAX_LINE], *token;
+    strcpy(copy_line, line);
+    token = strtok(copy_line, " ,\n\t");
+    if(token[strlen(token) -1] == ':') /* If token=label: */
+        token = strtok(NULL, " ,\n\t");
+    for(i=0; i<16; i++)
+        if(!strcmp(token, instruction_table[i]))
+        {
+            ic++
+            token = strtok(NULL, " ,\n\t");
+            if(token) /* if there is oprend */
+            {
+                if(token[0]=='@') /* token=rejster*/
+                {
+                    ic++                          /* need word for the rejester source*/
+                    token = strtok(NULL, " ,\n\t");
+                    if(token)                   /* if there is more then one oprend */
+                        if(token[0]!='@')      /* and the second oprend isn't also a rejester need more word*/
+                            ic++
+                }
+                else /* token is not a rejster*/
+                {
+                    ic++
+                    token = strtok(NULL, " ,\n\t");
+                    if(token) /* if there is more then one oprend */
+                        ic++
+                }
+            }
+            return ic;
+        }
+    return ic;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
