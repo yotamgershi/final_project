@@ -14,35 +14,42 @@ symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_fir
     current_nude=NULL;
 
     while(fgets(line, MAX_LINE, pre_assembled_file));
-        if (validate_line(line, line_number))
+    {
+        if(is_valid_length(line,line_number,pre_assembled_file))
         {
-            ic=count_instructions(line);
-            dc=count_data(line);        
-            if(is_label_line(line))         /* not including label befor entry/extern */
+            if (validate_line(line, line_number))
             {
-		externl = is_extern(line);                            
-		internal = is_entry(line);                           
-                get_label_name(line,label_name,internal); /* label name of external will be ".extern" so allways go to insert_extern */
-		if((current_nude=find(symbol_table, label_name)) == NULL) 
+                ic=count_instructions(line);
+                dc=count_data(line);        
+                if(is_label_line(line))         /* not including label befor entry/extern */
                 {
-                    if(!internal && !externl && dc)
-                        insert(symbol_table, label_name, *DC+100, line_number,externl, internal,true);
-                    else if(!internal && !externl && !dc)
-                        insert(symbol_table, label_name,*IC+100, line_number,externl, internal,false);    
-		    else if(internal)
-                        insert(symbol_table, label_name, -1, line_number,externl, internal,false);
-                    else /* externl */
-                        insert_extern(symbol_table,line,line_number,error_first_pass) /*could be number of label in line */
+		    externl = is_extern(line);                            
+		    internal = is_entry(line);                           
+                    get_label_name(line,label_name,internal); /* label name of external will be ".extern" so allways go to insert_extern */
+		    if((current_nude=find(symbol_table, label_name)) == NULL) 
+                    {
+                        if(!internal && !externl && dc)
+                            insert(symbol_table, label_name, *DC+100, line_number,externl, internal,true);
+                        else if(!internal && !externl && !dc)
+                            insert(symbol_table, label_name,*IC+100, line_number,externl, internal,false);    
+		        else if(internal)
+                            insert(symbol_table, label_name, -1, line_number,externl, internal,false);
+                        else /* externl */
+                            insert_extern(symbol_table,line,line_number,error_first_pass) /*could be number of label in line */
+                    }
+		    else 
+                        is_repeat_def(current_nude,line_number,externl,internal,error_first_pass,*DC,*IC,dc);	
                 }
-		else 
-                    is_repeat_def(current_nude,line_number,externl,internal,error_first_pass,*DC,*IC,dc);	
+                *IC+=ic;
+	        *DC+=dc;
             }
-            *IC+=ic;
-	    *DC+=dc;
+            else
+                *error_first_pass=true;
         }
         else
             *error_first_pass=true;
-        line_number++;
+        line_number++;       
+    }
     return symbol_dict;
 }
 
@@ -142,6 +149,39 @@ bool is_length_valid(char *line)
     if (strlen(line) == 81 && line[81]!='/n')
         return false;
 }
+
+
+
+
+
+
+
+
+
+
+
+int is_valid_length(char *line,int line_number,FILE *pre_assembled_file)
+{
+    if(strlen(line) ==  MAX_LINE -1) && (line[MAX_LINE -1] != '\n')
+    {
+        while(strlen(line) ==  MAX_LINE -1)
+        {
+            if(line[MAX_LINE -1] != '\n') /*not the end of the line, cuntinue to read the line */
+                fgets(line, MAX_LINE, input_file);
+            else
+	       break;
+        }
+        printf("ERROR in line: %d. The line is too long", line_number);
+        return false;
+    }
+    else
+        return true;
+}
+
+
+
+
+
 
 /* HILLEL FONCTIONS ALL FONCTION ASSUME LINE IS CORRECT */
 int is_extern(char * line)
