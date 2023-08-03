@@ -19,7 +19,7 @@ symbol_node *find_symbol(symbol_node *head, char *name)
     return NULL;
 }
 
-void add_symbol(symbol_node **head, char *name, int address, int line, boolean is_extern, boolean is_entry)
+void add_symbol(symbol_node **head, char *name, int address, int line, is_extern,int is_entry,int is_data)
 {
     symbol_node *new = new_symbol();
     strcpy(new->name, name);
@@ -28,6 +28,7 @@ void add_symbol(symbol_node **head, char *name, int address, int line, boolean i
     new->line = line;
     new->is_extern = is_extern;
     new->is_entry = is_entry;
+     new->is_data = is_data;
     *head = new;
 }
 void *validate_calloc(size_t nitems, size_t size)

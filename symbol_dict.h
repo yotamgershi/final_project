@@ -16,7 +16,7 @@ typedef struct symbol_dict {
 } symbol_dict;
 
 
-void insert(symbol_dict *symbols, char *name, int address, int line, boolean is_extern, boolean is_entry);
+void insert(symbol_dict *symbols, char *name, int address, int line, int is_extern, int is_entry, int is_data);
 
 
 /**

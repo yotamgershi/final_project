@@ -1,10 +1,10 @@
 #include "symbol_dict.h"
 
-void insert(symbol_dict *symbols, char *name, int address, int line, boolean is_extern, boolean is_entry)
+void insert(symbol_dict *symbols, char *name, int address, int line, int is_extern, int is_entry, int is_data)
 {
     int index;
     index = tolower(name[0]) - 'a';
-    add_symbol(&(symbols->dict[index]), name, address,line, is_extern, is_entry);
+    add_symbol(&(symbols->dict[index]), name, address,line, is_extern, is_entry,is_data);
 }
 
 symbol_node *find(symbol_dict *symbols, char *name)
