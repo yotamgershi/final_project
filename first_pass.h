@@ -13,7 +13,7 @@ int is_valid_length(char *line,int line_number,FILE *pre_assembled_file);
 
 int is_extern(char * line);
 int is_entry(char * line);
-void get_label_name(char * line,char * name,int internal);
+void get_label_name(char * line,char * name,int externl);
 void is_repeat_def(symbol_node *current_nude,int line_number,int externl,int internal,int *error_first_pass,int DC, int IC, int dc);
 int is_label_line(char *line);
 void insert_extern(symbol_dict *symbol_table,char *line,int line_number,int *error_first_pass);
