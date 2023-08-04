@@ -21,11 +21,11 @@ symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_fir
             {
                 ic=count_instructions(line);
                 dc=count_data(line);        
-                if(is_label_line(line))         /* not including label befor entry/extern */
+                if(is_label_line(line))         
                 {
 		    externl = is_extern(line);                            
 		    internal = is_entry(line);                           
-                    get_label_name(line,label_name,internal); /* label name of external will be ".extern" so allways go to insert_extern */
+                    get_label_name(line,label_name,externl); /* label name of external will be ".extern" so allways go to insert_extern */
 		    if((current_nude=find(symbol_table, label_name)) == NULL) 
                     {
                         if(!internal && !externl && dc)
@@ -190,9 +190,12 @@ int is_extern(char * line)
     char copy_line[MAX_LINE], *token;
     strcpy(copy_line, line);
     token = strtok(copy_line, " \n\t");
-    if(strcmp(token, ".extern"))
-        return false;
-    return true;
+    if(!strcmp(token, ".extern"))
+        return true;
+    token = strtok(copy_line, " \n\t");
+    if(!strcmp(token, ".extern"))
+        return true;
+    return false;
 }
 
 int is_entry(char * line)
@@ -201,21 +204,40 @@ int is_entry(char * line)
     char copy_line[MAX_LINE], *token;
     strcpy(copy_line, line);
     token = strtok(copy_line, " \n\t");
-    if(strcmp(token, ".entry"))
-        return false;
-    return true;
+    if(!strcmp(token, ".entry"))
+        return true;
+    token = strtok(copy_line, " \n\t");
+    if(!strcmp(token, ".entry"))
+        return true;
+    return false;
 }
 
-void get_label_name(char * line,char * name,int internal)
+void get_label_name(char * line,char * name,int externl)
 {
     char copy_line[82], *token;
+    if(externl)
+    {
+        strcpy(name, ".extern");
+        return;
+    }
     strcpy(copy_line, line);
     token = strtok(copy_line, " \n\t");
-    if(internal)
+    if(!strcmp(token, ".entry"))
+    {
         token = strtok(NULL, " \n\t");  /* moving to name from ".entry" */
+        strcpy(name, token);
+    }
     else
+    {
         token[strlen(token) -1] = '\0' ; /* deleting ":" */
-    strcpy(name, token);
+        strcpy(name, token);
+        token = strtok(NULL, " \n\t");
+        if(!strcmp(token, ".entry"))
+        {
+            token = strtok(NULL, " \n\t");
+            strcpy(name, token);
+        }
+    }
 }
 
 void is_repeat_def(symbol_node *current_nude,int line_number,int externl,int internal,int *error_first_pass,int DC, int IC, int dc)
@@ -273,9 +295,6 @@ int is_label_line(char *line)
         return true;
     if(token[strlen(token) -1] != ':') /* line is not: "label: " nor the above form, so no lable */
         return false;
-    token = strtok(NULL, " \n\t");
-    if(!strcmp(token, ".extern") || !strcmp(token, ".entry")) /* line is: "label: .entry " or "lable: .extern "*/
-        return false;
     return true;
 }
 
@@ -286,7 +305,9 @@ void insert_extern(symbol_dict *symbol_table,char *line,int line_number,int *err
     symbol_node *current_nude;
 
     strcpy(copy_line, line);
-    label_name = strtok(copy_line, " ,\n\t"); /* now label_name = .extern */
+    label_name = strtok(copy_line, " ,\n\t");  /* now label_name = .extern OR label_name=label: AND the .extern is after unsued label */
+    if(strcmp(label_name, ".extern"))         /* line has the form: unsued_label: .extern first_label ... */
+        label_name = strtok(NULL, " ,\n\t");
     label_name = strtok(NULL, " ,\n\t");     /* now label_name = first label in line */
     while(label_name)
     {
