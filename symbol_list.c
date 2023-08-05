@@ -31,6 +31,19 @@ void add_symbol(symbol_node **head, char *name, int address, int line,int is_ext
      new->is_data = is_data;
     *head = new;
 }
+
+void free_symbol_list(symbol_node *head)
+{
+
+    while(head)
+    {
+        symbol_node *tmp = head;
+        head = head->next;
+        free(tmp);
+
+    }
+}
+
 void *validate_calloc_symbol(size_t nitems, size_t size)
 {
     void *mem = calloc(nitems, size);
