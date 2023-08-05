@@ -49,6 +49,7 @@ symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_fir
             *error_first_pass=true;
         line_number++;       
     }
+    rewind(pre_assembled_file);
     return symbol_table;
 }
 
