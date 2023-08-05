@@ -3,6 +3,7 @@
 
 #include "symbol_list.h"
 #include <ctype.h>
+#define NUM_OF_LETTERS 26
 
 /**
  * @struct symbol_dict
@@ -12,7 +13,7 @@
  * The hash table is implemented as an array of symbol_node pointers, where each index represents a hash bucket.
  */
 typedef struct symbol_dict {
-    symbol_node *dict[26]; /**< The hash table array of symbol_node pointers (hash buckets). */
+    symbol_node *dict[NUM_OF_LETTERS]; /**< The hash table array of symbol_node pointers (hash buckets). */
 } symbol_dict;
 
 
@@ -31,5 +32,6 @@ void insert(symbol_dict *symbols, char *name, int address, int line, int is_exte
  * @return A pointer to the symbol node if found, or NULL if not found.
  */
 symbol_node *find(symbol_dict *symbols, char *name);
+void free_dictionary_symbol(symbol_dict *symbols);
 
 #endif
