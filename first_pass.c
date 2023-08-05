@@ -2,7 +2,7 @@
 
 symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_first_pass)
 {
-    int line_number = 0; 
+    int line_number = 1; 
     int ic,dc; /* count current number instruction/data */
     char line[MAX_LINE];
     char label_name[MAX_SYMBOL];
