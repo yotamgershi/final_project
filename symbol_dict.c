@@ -16,3 +16,12 @@ symbol_node *find(symbol_dict *symbols, char *name)
     return find_symbol(symbols->dict[index], name);
 }
 
+void free_dictionary_symbol(symbol_dict *symbols)
+{
+    int i;
+    for(i = 0; i < NUM_OF_LETTERS; i++) 
+    {
+        free_symbol_list(symbols->dict[i]);
+    }
+    free(symbols);
+}
