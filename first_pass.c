@@ -7,13 +7,12 @@ symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_fir
     char line[MAX_LINE];
     char label_name[MAX_SYMBOL];
     int internal,externl;
-    symbol_node *current_nude;
-    symbol_dict *symbol_table;
+    symbol_node *current_nude=NULL;
+    symbol_dict *symbol_table=validate_calloc_symbol(1,sizeof(symbol_dict));
 
-    symbol_table=NULL;
-    current_nude=NULL;
+    
 
-    while(fgets(line, MAX_LINE, pre_assembled_file));
+    while(fgets(line, MAX_LINE, pre_assembled_file))
     {
         if(is_valid_length(line,line_number,pre_assembled_file))
         {
@@ -319,7 +318,6 @@ void insert_extern(symbol_dict *symbol_table,char *line,int line_number,int *err
     }
 }
 
-
 int count_data(char *line)
 {
     
@@ -328,9 +326,10 @@ int count_data(char *line)
     char copy_line[MAX_LINE], *token;
     strcpy(copy_line, line);
     token = strtok(copy_line, " ,\n\t");
-    
+    if(!token)
+        return dc;    
     if(token[strlen(token) -1] == ':') /* If token=lable: */
-        token = strtok(NULL, " ,\n\t");
+        token = strtok(NULL, " ,\n\t");     
     if(!strcmp(token, ".data"))
     {
         token = strtok(NULL, " ,\n\t"); /* token=first intger  */
@@ -340,7 +339,7 @@ int count_data(char *line)
             token = strtok(NULL, " ,\n\t"); /* token=next intger  */
         }
     }
-    if(!strcmp(token, ".string"))
+    else if(!strcmp(token, ".string"))
     {
          
          while(line[i++] != '"'); /* now line[i] = first char in the string */
@@ -353,7 +352,6 @@ int count_data(char *line)
 }
 
 
-
 int count_instructions(char *line)
 {
     int ic=0;
@@ -362,6 +360,8 @@ int count_instructions(char *line)
     char copy_line[MAX_LINE], *token;
     strcpy(copy_line, line);
     token = strtok(copy_line, " ,\n\t");
+    if(!token)
+        return ic;
     if(token[strlen(token) -1] == ':') /* If token=label: */
         token = strtok(NULL, " ,\n\t");
     for(i=0; i<16; i++)
