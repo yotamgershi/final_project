@@ -2,6 +2,7 @@
 #define ASSEMBLER_H
 
 #include <stdio.h>
+#include "errors.h"
 #include "pre_assembler.h"
 /* #include "first_pass.h"
 #include "second_pass.h" */
