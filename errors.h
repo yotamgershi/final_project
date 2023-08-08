@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <string.h>
+#include "globals.h"
 
 #define NUM_OF_RESERVED_WORDS 29
 #define MAX_LEN_OF_RESERVED_WORD 31
@@ -55,7 +56,7 @@ extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 /*-------------------------------------------------------- Functions --------------------------------------------------------*/
 
 /* line */
-bool is_valid_commas(); /* TODO: return null for some reason */
+bool is_valid_commas(char *operands); /* works fine */
 bool is_empty_line(char *line);
 bool is_comment_line(char *line);
 

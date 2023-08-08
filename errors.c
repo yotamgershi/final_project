@@ -45,6 +45,17 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 
 bool is_empty_line(char *line)
 {
+    if (!line)
+        return false;
+    
+    char *line_no_spaces = remove_spaces(line);
+
+    if (*line_no_spaces == '\0') {
+        free(line_no_spaces);
+        return true;
+    }
+
+    free(line_no_spaces);
     return false;
 }
 
@@ -78,6 +89,12 @@ char *remove_spaces(char *line)
     *copy_line = '\0';
     return result;
 }
+
+bool is_comment_line(char *line)
+{
+    char line_no_spaces;
+}
+
 
 /* Labels*/
 bool is_reseved_word(char *label)
@@ -213,7 +230,7 @@ bool extern_valid_operand_amount()
 bool extern_not_defined_operand() 
 {
     return false;
-} /* also check if defined as entry/
+} /* also check if defined as entry */
 
 
 /* .entry */
