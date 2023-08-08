@@ -1,5 +1,7 @@
 #include "errors.h"
 
+/* Shiri */
+
 void handle_error(int line_number, int error_index)
 {
     printf("in line %d: %s.", line_number, errors[error_index].message);
@@ -87,7 +89,7 @@ char *remove_spaces(char *line)
         }
         line++;
     }
-    
+
     *copy_line = '\0';
     return result;
 }
@@ -117,7 +119,7 @@ bool is_reseved_word(char *label)
             return true;
     }
     return false;
-}
+} 
 
 bool is_valid_label(char *label)
 {
