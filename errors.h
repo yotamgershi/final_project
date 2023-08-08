@@ -8,124 +8,95 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <stdbool.h>
+#include <string.h>
 
-/** @def ERROR_MSG_SIZE
- *  @brief The size of the error message buffer.
- */
+#define NUM_OF_RESERVED_WORDS 29
+#define MAX_LEN_OF_RESERVED_WORD 31
+#define NUM_OF_COMMANDS 16
 #define ERROR_MSG_SIZE 256
+#define SPACE_AND_COMMA " ,\t\n"
+#define MAX_LINE 82
+/* -------------------------------------------------------- Enums --------------------------------------------------------*/
 
-/** @enum assembler_step
- *  @brief Enum to represent different steps of the assembler process.
- */
-typedef enum {
-    PRE_ASSEMBLER,  /**< Pre-assembler step */
-    FIRST_PASS,     /**< First pass step */
-    SECOND_PASS     /**< Second pass step */
-} assembler_step;
 
-/**
- * @enum error_code
- * @brief Enumeration to represent different error types.
- */
-typedef enum {
-    ERROR_ONE,    /**< Error one */
-    ERROR_TWO,    /**< Error two */
-    ERROR_THREE,  /**< Error three */
-    ERROR_FOUR,   /**< Error four */
-    ERROR_FIVE,   /**< Error five */
-    NUM_ERRORS    /**< Total number of errors in the code */
+/* numeration to represent different error types. */
+typedef enum 
+{
+    LABEL_RESERVED_WORD,
+    LABEL_ALREADY_DEFINED,
+    ERROR_THREE,
+    ERROR_FOUR,
+    ERROR_FIVE,
+    WRONG_ADDRESSING_TYPE,
+    NUM_ERRORS
 } error_code;
 
-/**
- * @struct error_item
- * @brief Structure to represent an error item.
- */
-typedef struct {
-    error_code code;      /**< Error code */
-    const char *message;  /**< Error message */
+/*-------------------------------------------------------- Structs --------------------------------------------------------*/
+
+typedef struct 
+{
+    char *cmd, *src_type, *dest_type; 
+} lookup_table;
+
+
+typedef struct 
+{
+    error_code code;
+    const char *message; 
 } error_item;
 
-/**
- * @brief Array of error items.
- *
- * This array holds all the error items, each with a corresponding error code and message.
- */
 extern error_item errors[NUM_ERRORS];
 
-/** @struct error
- *  @brief Structure to represent a single error encountered during the assembler process.
- */
-typedef struct error {
-    char message[ERROR_MSG_SIZE];   /**< Error message buffer */
-    int line_number;                /**< Line number where the error occurred */
-    struct error *next;             /**< Pointer to the next error in the linked list */
-} error;
+extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 
-/** @struct error_list
- *  @brief Structure to represent errors for a specific assembler step.
- */
-typedef struct error_list {
-    assembler_step step;   /**< The assembler step for which errors are stored */
-    error *head;           /**< Pointer to the head of the error linked list */
-} error_list;
 
-/** @struct error_log
- *  @brief Structure to represent all errors encountered during the assembler process.
- */
-typedef struct error_log {
-    error_list pre_assembler_errors;    /**< Errors encountered during the pre-assembler step */
-    error_list first_pass_errors;       /**< Errors encountered during the first pass step */
-    error_list second_pass_errors;      /**< Errors encountered during the second pass step */
-} error_log;
+/*-------------------------------------------------------- Functions --------------------------------------------------------*/
 
-/**
- * @brief Initializes the error log.
- *
- * This function initializes the error log by setting all linked lists to empty (head = NULL).
- *
- * @param log Pointer to the error log structure to be initialized.
- */
-void init_error_log(error_log *log);
+/* line */
+bool is_valid_commas(); /* TODO: return null for some reason */
+bool is_empty_line(char *line);
+bool is_comment_line(char *line);
 
-/**
- * @brief Adds an error to the error log.
- *
- * This function adds a new error to the corresponding error list based on the assembler step.
- *
- * @param log Pointer to the error log structure.
- * @param step The assembler step during which the error occurred.
- * @param message The error message to be added.
- * @param line_number The line number where the error occurred.
- */
-void add_error(error_log *log, assembler_step step, const char *message, int line_number);
+/* Labels*/
+bool is_reseved_word(char *label); /* Works fine */
+bool is_valid_label(char *label); /* Works fine */
+bool is_valid_address_type(); /*  */
 
-/**
- * @brief Prints the errors for a specific assembler step.
- *
- * This function prints all the errors stored in the error list for a specific assembler step.
- *
- * @param error_list Pointer to the error list for a specific assembler step.
- */
-void print_errors(error_list *error_list);
 
-/**
- * @brief Prints all errors in the error log.
- *
- * This function prints all the errors encountered during the assembler process,
- * including errors from pre-assembler, first pass, and second pass steps.
- *
- * @param log Pointer to the error log structure containing all errors.
- */
-void print_all_errors(error_log *log);
+/* operands */
+char *find_address_type(char *operand);
+bool is_valid_address_type(char *cmd, char *operand);
+bool is_valid_operand_amount(char *line); /* for each cmd type: 1/2/3 operands */
+int cmd_index(char *cmd);
+bool is_valid_operand();
 
-/**
- * @brief Clears the error log and frees memory.
- *
- * This function clears the error log by freeing memory allocated for error nodes.
- *
- * @param log Pointer to the error log structure to be cleared.
- */
-void clear_error_log(error_log *log);
+/* .string */
+bool is_valid_string(char *str);
+
+/* .data */
+bool is_valid_data_operand(char *operand);
+
+
+/* .extern */
+bool extern_valid_operand_amount();
+bool extern_not_defined_operand(); /* also check if defined as entry */
+
+
+/* .entry */
+bool entry_valid_operand_amount();
+
+/* int */
+bool is_legal_int(); /* add a test if its in range -511 to 512 for most, and -2047 to 2048 for data */
+
+/*-------------------- Helper Functions --------------------*/
+
+bool has_two_consecutive_commas(char *line);
+char *remove_spaces(char *line);
+char *addressing_type(char *operand);
+void skip_spaces(char *str);
+int count_words(char *line);
+
 
 #endif /* ERROR_H */
