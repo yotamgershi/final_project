@@ -57,7 +57,7 @@ extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 
 /* line */
 bool is_valid_commas(char *operands); /* works fine */
-bool is_empty_line(char *line);
+bool is_empty_line(char *line); /* works fine */
 bool is_comment_line(char *line);
 
 /* Labels*/

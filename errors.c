@@ -78,6 +78,7 @@ char *remove_spaces(char *line)
     char *copy_line = (char *)malloc(strlen(line) + 1);
     char *result = copy_line;
     strcpy(copy_line, line);
+
     while (*line != '\0')
     {
         if (!isspace(*line))
@@ -86,13 +87,23 @@ char *remove_spaces(char *line)
         }
         line++;
     }
+    
     *copy_line = '\0';
     return result;
 }
 
 bool is_comment_line(char *line)
 {
-    char line_no_spaces;
+    char *line_no_spaces = remove_spaces(line);
+
+    if (*line_no_spaces == ';')
+    {
+        free(line_no_spaces);
+        return true;
+    }
+        
+    free(line_no_spaces);
+    return (line == ';');
 }
 
 
