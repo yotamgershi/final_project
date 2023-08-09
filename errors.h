@@ -65,11 +65,13 @@ bool is_reseved_word(char *label); /* Works fine */
 bool is_valid_label(char *label); /* Works fine */
 
 /* operands */
-char *find_address_type(char *operand);
-bool is_valid_address_type(char *cmd, char *operand);
-bool is_valid_operand_amount(char *line); /* for each cmd type: 1/2/3 operands */
+char *find_address_type(char *operand);  /* works fine */
+bool is_valid_operand_amount(char *line);
 int cmd_index(char *cmd);
 bool is_valid_operand(char *operand);
+bool is_valid_dest_type(char *cmd, char *dest);
+bool is_valid_src_type(char *cmd, char *src);
+
 
 /* .string */
 bool is_valid_string(char *str);

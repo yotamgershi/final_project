@@ -156,7 +156,7 @@ bool is_valid_src_type(char *cmd, char *src)
     return false;
 }
 
-bool is_valid_desf_type(char *cmd, char *dest)
+bool is_valid_dest_type(char *cmd, char *dest)
 {
     int i;
     char *valid_address_type;
@@ -173,9 +173,9 @@ bool is_valid_desf_type(char *cmd, char *dest)
 
 char *find_address_type(char *operand)
 {
-    if (isdigit(operand))
+    if (isdigit(operand[0]))
         return "1";
-    if (isalpha(operand)) /* maybe problem with invalid labels */
+    if (isalpha(operand[0])) /* maybe problem with invalid labels */
         return "3";
     if (operand[0] == '@')
                 return "5";
@@ -184,7 +184,8 @@ char *find_address_type(char *operand)
 
 bool is_valid_operand(char *operand)
 {
-    if (isdigit(*operand)) {
+    if (isdigit(*operand)) 
+    {
         int num = atoi(operand);
         if (num <= 512 && num >= -511)
             return true;
