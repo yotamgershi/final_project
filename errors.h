@@ -66,9 +66,9 @@ bool is_valid_label(char *label); /* Works fine */
 
 /* operands */
 char *find_address_type(char *operand);  /* works fine */
-bool is_valid_operand_amount(char *line);
-int cmd_index(char *cmd);
-bool is_valid_operand(char *operand);
+bool is_valid_operand_amount(char *line); /* TODO: check with Maor */
+int cmd_index(char *cmd); /* Works fine */
+bool is_valid_operand(char *operand); /* Works fine */
 bool is_valid_dest_type(char *cmd, char *dest);
 bool is_valid_src_type(char *cmd, char *src);
 

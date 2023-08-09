@@ -184,7 +184,7 @@ char *find_address_type(char *operand)
 
 bool is_valid_operand(char *operand)
 {
-    if (isdigit(*operand)) 
+    if (isdigit(*operand) || (*operand == '-' && isdigit(*(operand + 1)))) 
     {
         int num = atoi(operand);
         if (num <= 512 && num >= -511)
