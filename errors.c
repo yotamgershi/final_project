@@ -141,23 +141,74 @@ bool is_valid_label(char *label)
 
 /* operands */
 
-bool is_valid_address_type(char *cmd, char *operand)
+bool is_valid_src_type(char *cmd, char *src)
 {
-    char *addressing_type = find_address_type(operand);
+    int i;
+    char *valid_address_type;
+    for (i = 0; i <= 15; i++)
+    {
+        if (strcmp(cmds[i].cmd, cmd))
+            valid_address_type = cmds[i].src_type;
+    }
+    char *addressing_type = find_address_type(src);
+    if (valid_address_type, addressing_type)
+        return true;
+    return false;
+}
+
+bool is_valid_desf_type(char *cmd, char *dest)
+{
+    int i;
+    char *valid_address_type;
+    for (i = 0; i <= 15; i++)
+    {
+        if (strcmp(cmds[i].cmd, cmd))
+            valid_address_type = cmds[i].dest_type;
+    }
+    char *addressing_type = find_address_type(dest);
+    if (valid_address_type, addressing_type)
+        return true;
     return false;
 }
 
 char *find_address_type(char *operand)
 {
-    if (atoi(operand) <= 512 || atoi(operand) >= -511) /* TODO: use is digit */
+    if (isdigit(operand))
         return "1";
-    if (operand[0] == '@' && operand[1] == 'r' && operand[2] >= '0' && operand[2] <= '7' 
-        && (operand[3] == ',' || operand[3] == ' '))
+    if (isalpha(operand)) /* maybe problem with invalid labels */
+        return "3";
+    if (operand[0] == '@')
                 return "5";
     return NULL;
 }
 
-bool is_valid_operand_amount(char *line) /* works fine */ 
+bool is_valid_operand(char *operand)
+{
+    if (isdigit(*operand)) {
+        int num = atoi(operand);
+        if (num <= 512 && num >= -511)
+            return true;
+        return false;
+    }
+    
+    if (isalpha(operand[0]) && strlen(operand) <= 31) 
+    {
+        while (*operand) 
+        {
+            if (!isdigit(*operand) && !isalpha(*operand))
+                return false;
+            operand++;
+        }
+        return true;
+    }
+    
+    if (operand[0] == '@' && operand[1] == 'r' && operand[2] >= '0' && operand[2] <= '7')
+        return true;
+
+    return false;
+}
+
+bool is_valid_operand_amount(char *line)
 {
     char copy_line[MAX_LINE], *first_word;
     int command_index, op_amount = count_words(line);
@@ -224,11 +275,6 @@ void skip_spaces(char *line)
         line++;
     }
     *dst = '\0';
-}
-
-bool is_valid_operand() 
-{
-    return false;
 }
 
 /* .string */

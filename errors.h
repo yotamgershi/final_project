@@ -58,20 +58,18 @@ extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 /* line */
 bool is_valid_commas(char *operands); /* works fine */
 bool is_empty_line(char *line); /* works fine */
-bool is_comment_line(char *line);
+bool is_comment_line(char *line); /* works fine */
 
 /* Labels*/
 bool is_reseved_word(char *label); /* Works fine */
 bool is_valid_label(char *label); /* Works fine */
-bool is_valid_address_type(); /*  */
-
 
 /* operands */
 char *find_address_type(char *operand);
 bool is_valid_address_type(char *cmd, char *operand);
 bool is_valid_operand_amount(char *line); /* for each cmd type: 1/2/3 operands */
 int cmd_index(char *cmd);
-bool is_valid_operand();
+bool is_valid_operand(char *operand);
 
 /* .string */
 bool is_valid_string(char *str);
