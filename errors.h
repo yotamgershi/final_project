@@ -80,10 +80,11 @@ bool is_valid_src_type(char *cmd, char *src); /* TODO: check with Maor*/
 
 /* .string */
 bool is_valid_string(char *str); /* Works fine */
-bool is_string_directive (char *line) /* Works fine*/
+bool is_string_directive (char *line); /* Works fine*/
 
 /* .data */
-bool is_valid_data_operand(char *operand);
+bool is_data_directive(char *line); /* Works fine */
+bool is_valid_data_operand(char *operand); /* Works fine */
 
 
 /* .extern */

@@ -318,6 +318,47 @@ bool is_valid_string(char *str)
     return false;
 }
 
+/* .data */
+
+bool is_data_directive(char *line)
+{
+    char copy_line[MAX_LINE];
+    char *directive;
+
+    strcpy(copy_line, line);
+    directive = strtok(copy_line, SPACE);
+
+    if (directive && !strcmp(directive, ".data"))
+        return true;
+    return false;
+}
+
+bool is_valid_data(char *data)
+{
+    int i;
+    bool has_digit = false;
+
+    for (i = 0; i < strlen(data); i++)
+    {
+        if (!isspace(data[i]))
+        {
+            if (isdigit(data[i]))
+            {
+                has_digit = true;
+            }
+            else if (data[i] != '+' && data[i] != '-')
+            {
+                if (!has_digit)
+                    return false;
+                else
+                    has_digit = false;
+            }
+        }
+    }
+
+    return has_digit;
+}
+
 /* .extern */
 bool extern_valid_operand_amount() 
 {
