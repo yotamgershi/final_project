@@ -57,12 +57,12 @@ extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 /*-------------------------------------------------------- Functions --------------------------------------------------------*/
 
 /* line */
-bool is_valid_commas(char *operands); /* works fine */
-char *remove_spaces(char *line); /* works fine */
-void skip_spaces(char *str); /* works fine */
-bool is_empty_line(char *line); /* works fine */
-bool is_comment_line(char *line); /* works fine */
-int count_words(char *line); /* works fine */
+bool is_valid_commas(char *operands); /* Works fine */
+char *remove_spaces(char *line); /* Works fine */
+void skip_spaces(char *str); /* Works fine */
+bool is_empty_line(char *line); /* Works fine */
+bool is_comment_line(char *line); /* Works fine */
+int count_words(char *line); /* Works fine */
 
 
 /* Labels*/
@@ -88,14 +88,20 @@ bool is_valid_data_operand(char *operand); /* Works fine */
 
 
 /* .extern */
-bool extern_valid_operand_amount();
-bool extern_not_defined_operand(); /* also check if defined as entry */
+bool is_valid_extern(char *line); /* TODO: Test with Maor */
+bool is_valid_extern_operands(char *operands);
+bool is_extern_directive(char *line);
+bool is_valid_label_for_extern(char *label);
+
 
 
 /* .entry */
-bool entry_valid_operand_amount();
+bool is_valid_entry(char *line); /* TODO: Test with Maor */
+bool is_valid_entry_operands(char *operands);
+bool is_entry_directive(char *line);
+bool entry_valid_operand_amount(char *line);
 
-/* int */
-bool is_legal_int(); /* add a test if its in range -511 to 512 for most, and -2047 to 2048 for data */
+
+
 
 #endif /* ERROR_H */

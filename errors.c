@@ -47,10 +47,12 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 
 bool is_empty_line(char *line)
 {
+    char *line_no_spaces;
+
     if (!line)
         return false;
     
-    char *line_no_spaces = remove_spaces(line);
+    line_no_spaces = remove_spaces(line);
 
     if (*line_no_spaces == '\0') {
         free(line_no_spaces);
@@ -105,7 +107,7 @@ bool is_comment_line(char *line)
     }
         
     free(line_no_spaces);
-    return (line == ';');
+    return (*line == ';');
 }
 
 
@@ -144,14 +146,16 @@ bool is_valid_label(char *label)
 bool is_valid_src_type(char *cmd, char *src)
 {
     int i;
-    char *valid_address_type;
+    char *valid_address_type, *addressing_type;
+
     for (i = 0; i <= 15; i++)
     {
         if (strcmp(cmds[i].cmd, cmd))
             valid_address_type = cmds[i].src_type;
     }
-    char *addressing_type = find_address_type(src);
-    if (valid_address_type, addressing_type)
+
+    addressing_type = find_address_type(src);
+    if (strstr(valid_address_type, addressing_type))
         return true;
     return false;
 }
@@ -159,14 +163,14 @@ bool is_valid_src_type(char *cmd, char *src)
 bool is_valid_dest_type(char *cmd, char *dest)
 {
     int i;
-    char *valid_address_type;
+    char *valid_address_type, *addressing_type;
     for (i = 0; i <= 15; i++)
     {
         if (strcmp(cmds[i].cmd, cmd))
             valid_address_type = cmds[i].dest_type;
     }
-    char *addressing_type = find_address_type(dest);
-    if (valid_address_type, addressing_type)
+    addressing_type = find_address_type(dest);
+    if (strstr(valid_address_type, addressing_type))
         return true;
     return false;
 }
@@ -360,25 +364,111 @@ bool is_valid_data(char *data)
 }
 
 /* .extern */
-bool extern_valid_operand_amount() 
+
+bool is_valid_extern(char *line)
 {
+    char *operands = strchr(line, ' ');
+    if (operands) 
+    {
+        operands++;
+        return is_valid_extern_operands(operands);
+    }
     return false;
 }
 
-bool extern_not_defined_operand() 
+bool is_valid_extern_operands(char *operands)
 {
-    return false;
-} /* also check if defined as entry */
+    char *operand = strtok(operands, ",");
+    
+    while (operand != NULL)
+    {
+        if (!is_valid_label_for_extern(operand))
+            return false;
+        
+        operand = strtok(NULL, ",");
+    }
+    
+    return true;
+}
 
+bool is_extern_directive(char *line)
+{
+    char copy_line[MAX_LINE];
+    char *directive;
+
+    strcpy(copy_line, line);
+    directive = strtok(copy_line, SPACE);
+
+    if (directive && !strcmp(directive, ".extern"))
+        return true;
+    return false;
+}
+
+bool is_valid_label_for_extern(char *label)
+{
+    int i, len;
+
+    if (label == NULL || strlen(label) > 31)
+        return false;
+
+    len = strlen(label);
+    if (!isalpha(label[0]))
+        return false;
+
+    for (i = 1; i < len; i++)
+    {
+        if (!isalnum(label[i])) 
+            return false;
+    }
+
+    return true;
+}
 
 /* .entry */
-bool entry_valid_operand_amount() 
+
+bool is_valid_entry(char *line)
 {
+    char *operands = strchr(line, ' ');
+    if (operands) 
+    {
+        operands++;
+        return is_valid_extern_operands(operands);
+    }
     return false;
 }
 
-/* int */
-bool is_legal_int() 
+bool is_valid_entry_operands(char *operands)
 {
+    char *operand = strtok(operands, ",");
+    
+    while (operand != NULL)
+    {
+        if (!is_valid_label_for_extern(operand))
+            return false;
+        
+        operand = strtok(NULL, ",");
+    }
+    
+    return true;
+}
+
+bool is_entry_directive(char *line)
+{
+    char copy_line[MAX_LINE];
+    char *directive;
+
+    strcpy(copy_line, line);
+    directive = strtok(copy_line, SPACE);
+
+    if (directive && !strcmp(directive, ".entry"))
+        return true;
     return false;
 }
+
+bool entry_valid_operand_amount(char *line) 
+{
+    return (count_words(line) == 2);
+}
+
+
+
