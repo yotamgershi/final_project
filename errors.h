@@ -18,6 +18,7 @@
 #define NUM_OF_COMMANDS 16
 #define ERROR_MSG_SIZE 256
 #define SPACE_AND_COMMA " ,\t\n"
+#define SPACE " \t"
 #define MAX_LINE 82
 /* -------------------------------------------------------- Enums --------------------------------------------------------*/
 
@@ -57,8 +58,12 @@ extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 
 /* line */
 bool is_valid_commas(char *operands); /* works fine */
+char *remove_spaces(char *line); /* works fine */
+void skip_spaces(char *str); /* works fine */
 bool is_empty_line(char *line); /* works fine */
 bool is_comment_line(char *line); /* works fine */
+int count_words(char *line); /* works fine */
+
 
 /* Labels*/
 bool is_reseved_word(char *label); /* Works fine */
@@ -69,12 +74,13 @@ char *find_address_type(char *operand);  /* works fine */
 bool is_valid_operand_amount(char *line); /* TODO: check with Maor */
 int cmd_index(char *cmd); /* Works fine */
 bool is_valid_operand(char *operand); /* Works fine */
-bool is_valid_dest_type(char *cmd, char *dest);
-bool is_valid_src_type(char *cmd, char *src);
+bool is_valid_dest_type(char *cmd, char *dest); /* TODO: check with Maor*/
+bool is_valid_src_type(char *cmd, char *src); /* TODO: check with Maor*/
 
 
 /* .string */
-bool is_valid_string(char *str);
+bool is_valid_string(char *str); /* Works fine */
+bool is_string_directive (char *line) /* Works fine*/
 
 /* .data */
 bool is_valid_data_operand(char *operand);
@@ -90,14 +96,5 @@ bool entry_valid_operand_amount();
 
 /* int */
 bool is_legal_int(); /* add a test if its in range -511 to 512 for most, and -2047 to 2048 for data */
-
-/*-------------------- Helper Functions --------------------*/
-
-bool has_two_consecutive_commas(char *line);
-char *remove_spaces(char *line);
-char *addressing_type(char *operand);
-void skip_spaces(char *str);
-int count_words(char *line);
-
 
 #endif /* ERROR_H */

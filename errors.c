@@ -280,6 +280,43 @@ void skip_spaces(char *line)
 
 /* .string */
 
+bool is_string_directive(char *line)
+{
+    char copy_line[MAX_LINE];
+    char *directive;
+
+    strcpy(copy_line, line);
+    directive = strtok(copy_line, SPACE);
+
+    if (directive && !strcmp(directive, ".string"))
+        return true;
+    return false;
+}
+
+bool is_valid_string(char *str)
+{
+    char *first_quote = strchr(str, '"');
+    char *last_quote = strrchr(str, '"');
+    char *ptr;
+
+    if (first_quote && last_quote && first_quote != last_quote) 
+    {
+        for (ptr = str; ptr < first_quote; ptr++) 
+        {
+            if (!isspace(*ptr))
+                return false;
+        }
+        for (ptr = last_quote + 1; *ptr != '\0'; ptr++) 
+        {
+            if (!isspace(*ptr))
+                return false;
+        }
+
+        return true;
+    }
+
+    return false;
+}
 
 /* .extern */
 bool extern_valid_operand_amount() 
