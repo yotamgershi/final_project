@@ -83,7 +83,7 @@ void update_data_address(symbol_dict *symbol_table,int IC)
         head=get_page(symbol_table,i);
         while(head)
         {
-            if(get_is_data(head));
+            if(get_is_data(head))
                 set_address(head,get_address(head)+IC);
             head = get_next_symbol(head);
         }
@@ -209,22 +209,24 @@ void encode_instruction_line(char instruc_image[][BiW],char *line,int *ic,int li
             return;
         }
 }
+/*receive word and command number(0-15), sets word to 000----00000, ----=command number in binary */
 void encode_instruction_opcode(char *word,int command_num)
 {
     
     encode_data(word,command_num<<5);
 }
 
-void encode_sourse_oprend(char *word,char *first_oprend)
+/*receive word and oprend, update addressing method of sourse oprend in the word acording to oprend type */
+void encode_sourse_oprend(char *word,char *oprend)
 {
 
-    if(first_oprend[0]=='@')
+    if(oprend[0]=='@')
     {
         word[11]='1';
         word[10]='0';
         word[9]='1';
     }
-    else if(isalpha(*first_oprend))
+    else if(isalpha(oprend[0]))
     {
         word[11]='0';
         word[10]='1';
@@ -237,16 +239,16 @@ void encode_sourse_oprend(char *word,char *first_oprend)
         word[9] ='1';
     }
 }
-
-void encode_destantion_oprend(char *word,char *second_oprend)
+/*receive word and oprend, update addressing method of destantion oprend in the word acording to oprend type */
+void encode_destantion_oprend(char *word,char *oprend)
 {
-    if(second_oprend[0]=='@')
+    if(oprend[0]=='@')
     {
         word[4]='1';
         word[3]='0';
         word[2]='1';
     }
-    else if(isalpha(*second_oprend))
+    else if(isalpha(oprend[0]))
     {
         word[4]='0';
         word[3]='1';
@@ -259,14 +261,15 @@ void encode_destantion_oprend(char *word,char *second_oprend)
         word[2]='1';
     }  
 }
-
+/*receive word and rejster number(0-7), sets word to -----0000000, -----=rejster number in binary */
 void encode_first_rej(char *word,int rejster_num)
 {
     
     encode_data(word,rejster_num<<7);
 }
 
-
+/*receive word,rejster number(0-7),and wether the first oprend is also rejster
+ sets word to 00000-----00 or(if first oprend is rej) *****-----00, -----=rejster number in binary */
 void encode_second_rej(char *word,int rejster_num, int is_first_also_rej)
 {
     int mask=1, i;
@@ -292,45 +295,45 @@ void encode_second_rej(char *word,int rejster_num, int is_first_also_rej)
 
 }
 
-void encode_label(char *word,char *label_name,int line_number,FILE *ext_file,int *error,symbol_dict *symbol_table,int index)
+/*receive word, label name, line number, ext_file, pointer to error, symbol table and word number.
+  if this instruction word encode it, if thers lable in use update ext_file if its extern, and error if no sach symbol*/
+void encode_label(char *word,char *label_name,int line_number,FILE *ext_file,int *error,symbol_dict *symbol_table,int word_number)
 {
     symbol_node *current_nude;
-    current_nude=find(symbol_table, label_name);
+    current_nude=find(symbol_table, label_name); /*look for the label in the symbol table*/
 
-    if(current_nude==NULL)
+    if(current_nude==NULL) /*didnt find label*/
     {
         *error=2;
         printf("ERROR in line %d, symbol=%s doesn't defined",line_number,label_name);
         return;
     }
+    
+    encode_data(word,(get_address(current_nude))<<2); /*encode address of label to word*/
 
-    encode_data(word,(get_address(current_nude))<<2);
-
-    if(get_is_extern(current_nude))
+    if(get_is_extern(current_nude)) /*if extern*/
     {
-        encode_data(word,0);
-        if(*error !=2)
+        encode_data(word,0);/* address=0, now word=000000000000*/
+        if(*error ==1) /*if thers no error and no ext_file, need to update error to 0, to indicate thers now need in extrn file*/
             *error=0;
-        word[0]='1'; /* extern */
-        fprintf(ext_file, "%s	%d\n",label_name,index);
+        word[0]='1'; /* extern, now word=000000000001*/
+        fprintf(ext_file, "%s	%d\n",label_name,word_number);/*print to extrn file*/
     }
     else
-        word[1]='1';    
+        word[1]='1'; /*lable is relocate*/
 }
 
-
-
-
+/*recive entry file and symbol table, if ther's no error and ther's entry creat the file, otherwise destroy it.*/
 void print_entry_to_file(FILE *ent_file,char *ent_file_name,symbol_dict *symbol_table,int *error)
 {
     
     int there_is_entry=false;
     int i;
     symbol_node *head;
-    for(i = 0; i < NUM_OF_LETTERS; i++) 
+    for(i = 0; i < NUM_OF_LETTERS; i++) /*go through every page in the dictionary*/
     {
         head=get_page(symbol_table,i);
-        while(head)
+        while(head)/*go through every symbol in current page*/
         {
             if(get_is_entry(head) && get_address(head)>0)
             {
@@ -352,12 +355,11 @@ void print_entry_to_file(FILE *ent_file,char *ent_file_name,symbol_dict *symbol_
     }
     else
         fclose(ent_file);
-    return;
 }
 
 
 
-
+/*recive tabels, their length, and file, prints instruction and data tabels to file in BASE-64*/
 void print_tables_to_file(char instruc_image[][BiW],char data_image[][BiW],int DC,int IC,FILE *ob_file)
 {
     int i;
@@ -369,49 +371,26 @@ void print_tables_to_file(char instruc_image[][BiW],char data_image[][BiW],int D
 }
 
 
-
+/*recive word in binary and file, print word in BASE-64 to file*/
 void print_binary_word_64(char *word,FILE *ob_file)
 {
-    char base_64[64]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+    char base64[64]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
                       'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
                       '0','1','2','3','4','5','6','7','8','9','+','/'};
 
-    int num=0;
+    int desimal_value=0;
     int i;
-    int factor=1;
-    int a,b;
+    int digit=1;
     char c1,c2;
 
-    for(i=0;i<BiW;i++) /* to get num equal the desimal represntaion of word */
+    for(i=0;i<BiW;i++)
     {
-        num+= ((int)word[i] - '0')*factor;
-        factor=factor*2; 
+        desimal_value+= ((int)word[i] - '0')*digit;
+        digit=digit*2; 
     }
  
-    a=num/64;
-    b=num%64;
-
-    c1=base_64[a];
-    c2=base_64[b];
+    c1=base64[desimal_value/64];
+    c2=base64[desimal_value%64];
 
     fprintf(ob_file, "%c%c\n",c1,c2);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
