@@ -1,36 +1,45 @@
 #ifndef SYMBOL_DICT_H
 #define SYMBOL_DICT_H
 
-#include "symbol_list.h"
 #include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #define NUM_OF_LETTERS 26
 
-/**
- * @struct symbol_dict
- * @brief A dictionary to store symbols using a hash table.
- *
- * This structure represents a dictionary to store symbols using a simple hash table.
- * The hash table is implemented as an array of symbol_node pointers, where each index represents a hash bucket.
- */
-typedef struct symbol_dict {
-    symbol_node *dict[NUM_OF_LETTERS]; /**< The hash table array of symbol_node pointers (hash buckets). */
-} symbol_dict;
+
+#define MAX_SYMBOL 31
+
+typedef enum boolean {
+    TRUE,
+    FALSE
+} boolean;
+
+typedef struct symbol_dict symbol_dict;
+typedef struct symbol_node symbol_node;
 
 
-void insert(symbol_dict *symbols, char *name, int address, int line, int is_extern, int is_entry, int is_data);
+symbol_node *new_symbol();
+symbol_node *find_symbol(symbol_node *head, char *name);
+symbol_node *get_next_symbol(symbol_node *symbol);
+int get_is_data(symbol_node *symbol);
+int get_is_extern(symbol_node *symbol);
+int get_line_number(symbol_node *symbol);
+char *get_name(symbol_node *symbol);
+int get_is_entry(symbol_node *symbol);
+int get_address(symbol_node *symbol);
 
+void set_is_entry(symbol_node *symbol,int is_entry);
+void set_is_data(symbol_node *symbol,int is_data);
+void set_address(symbol_node *symbol,int address);
 
-/**
- * @brief Finds a symbol in the symbol dictionary by its name.
- *
- * This function searches for a symbol with the given name in the symbol dictionary and returns a pointer to the symbol node if found,
- * or NULL if the symbol is not present in the dictionary.
- * It calculates the hash value for the symbol name to determine the hash bucket to search in the hash table.
- *
- * @param symbols A pointer to the symbol dictionary.
- * @param name The name of the symbol to find.
- * @return A pointer to the symbol node if found, or NULL if not found.
- */
+void add_symbol(symbol_node **head, char *name, int address, int line_number, int is_extern, int is_entry,int is_data);
+void *validate_calloc_symbol(size_t nitems, size_t size);
+void free_symbol_list(symbol_node *head);
+
+symbol_dict *new_symbol_dict();
+symbol_node *get_page(symbol_dict *dict,int page_number);
+void insert(symbol_dict *symbols, char *name, int address, int line_number, int is_extern, int is_entry, int is_data);
 symbol_node *find(symbol_dict *symbols, char *name);
 void free_dictionary_symbol(symbol_dict *symbols);
 
