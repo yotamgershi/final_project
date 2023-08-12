@@ -26,12 +26,18 @@
 /* numeration to represent different error types. */
 typedef enum 
 {
-    LABEL_RESERVED_WORD,
-    LABEL_ALREADY_DEFINED,
-    ERROR_THREE,
-    ERROR_FOUR,
-    ERROR_FIVE,
-    WRONG_ADDRESSING_TYPE,
+    INVALID_COMMAS,
+    RESERVED_WORD,
+    INVALID_LABEL,
+    INVALID_OPERAND_TYPE,
+    INVALID_OPERAND_AMOUNT,
+    INVALID_OPERAND,
+    INVALID_STRING,
+    INVALID_DATA,
+    INVALID_EXTERN,
+    INVALID_EXTERN_OPERAND,
+    INVALID_ENTRY,
+    INVALID_ENTRY_OPERAND,
     NUM_ERRORS
 } error_code;
 
@@ -56,44 +62,48 @@ extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 
 /*-------------------------------------------------------- Functions --------------------------------------------------------*/
 
+bool validate_line();
+void handle_error(int line_number, int error_index);
+
+
 /* line */
-bool is_valid_commas(char *operands); /* Works fine */
-char *remove_spaces(char *line); /* Works fine */
-void skip_spaces(char *str); /* Works fine */
-bool is_empty_line(char *line); /* Works fine */
-bool is_comment_line(char *line); /* Works fine */
-int count_words(char *line); /* Works fine */
+bool is_valid_commas(char *operands);
+char *remove_spaces(char *line);
+void skip_spaces(char *str);
+bool is_empty_line(char *line); 
+bool is_comment_line(char *line); 
+int count_words(char *line); 
 
 /* Labels*/
-bool is_reseved_word(char *label); /* Works fine */
-bool is_valid_label(char *label); /* Works fine */
+bool is_reseved_word(char *label); 
+bool is_valid_label(char *label); 
 
 /* operands */
-char *find_address_type(char *operand);  /* works fine */
-bool is_valid_type(char *cmd, char *dest, bool is_src); /* Works fine*/
-char *valid_address_type(int i, bool is_src); /* Works fine */
-bool is_valid_operand_amount(char *line); /* Works fine */
-int cmd_index(char *cmd); /* Works fine */
-bool is_valid_operand(char *operand); /* Works fine */
+char *find_address_type(char *operand);  
+bool is_valid_type(char *cmd, char *dest, bool is_src); 
+char *valid_address_type(int i, bool is_src); 
+bool is_valid_operand_amount(char *line); 
+int cmd_index(char *cmd); 
+bool is_valid_operand(char *operand); 
 
 /* .string */
-bool is_valid_string(char *str); /* Works fine */
-bool is_string_directive (char *line); /* Works fine*/
+bool is_valid_string(char *str); 
+bool is_string_directive (char *line);
 
 /* .data */
-bool is_data_directive(char *line); /* Works fine */
-bool is_valid_data_operand(char *operand); /* Works fine */
+bool is_data_directive(char *line); 
+bool is_valid_data_operand(char *operand); 
 
 /* .extern */
-bool is_valid_extern(char *line); /* Works fine */
-bool is_valid_extern_operands(char *operands); /* Works fine */
-bool is_extern_directive(char *line); /* Works fine */
-bool is_valid_label_for_extern_and_entry(char *label); /* Works fine */
+bool is_valid_extern(char *line); 
+bool is_valid_extern_operands(char *operands); 
+bool is_extern_directive(char *line); 
+bool is_valid_label_for_extern_and_entry(char *label); 
 
 /* .entry */
-bool is_valid_entry(char *line); /* Works fine */
-bool is_valid_entry_operands(char *operands); /* Works fine */
-bool is_entry_directive(char *line); /* Works fine */
-bool entry_valid_operand_amount(char *line); /* Works fine */
+bool is_valid_entry(char *line); 
+bool is_valid_entry_operands(char *operands); 
+bool is_entry_directive(char *line); 
+bool entry_valid_operand_amount(char *line); 
 
 #endif /* ERROR_H */

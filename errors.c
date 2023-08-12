@@ -1,7 +1,5 @@
 #include "errors.h"
 
-/* Shiri */
-
 void handle_error(int line_number, int error_index)
 {
     printf("in line %d: %s.", line_number, errors[error_index].message);
@@ -28,11 +26,18 @@ lookup_table cmds[] =
 };
 
 error_item errors[NUM_ERRORS] = {
-    {LABEL_RESERVED_WORD, "Label can't be a reserved word"},
-    {LABEL_ALREADY_DEFINED, "Label can't be redefined"},
-    {ERROR_THREE, "Error Three Message"},
-    {ERROR_FOUR, "Error Four Message"},
-    {WRONG_ADDRESSING_TYPE, "Adressing type not supported by this command"}
+    {INVALID_COMMAS, "Commas are not valid"},
+    {RESERVED_WORD, "The word is not familier"},
+    {INVALID_LABEL, "Label is invalid"},
+    {INVALID_OPERAND_TYPE, "Invalid operand type for command"},
+    {INVALID_OPERAND_AMOUNT, "Invalid operand amountfor command"},
+    {INVALID_OPERAND, "Invalid operand for command"},
+    {INVALID_STRING, "Invalid string definition"},
+    {INVALID_DATA, "Invalid data definition"},
+    {INVALID_EXTERN, "Invalid extern definition"},
+    {INVALID_EXTERN_OPERAND, "Invalid extern operand"},
+    {INVALID_ENTRY, "Invalid entry usage"},
+    {INVALID_ENTRY_OPERAND, "Invalid entry operand"}    
 };
 
 char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] = 
@@ -41,6 +46,15 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
     "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne", "red", "prn", "jsr", "rts", "stop",
     "label", ".data", ".string", ".entry", ".extern"
 };
+/* -------------------------------------------------------- validate_line (main function) -------------------------------------------------------- */
+
+bool validate_line()
+{
+    return false;
+}
+
+
+
 
 
 /* -------------------------------------------------------- line -------------------------------------------------------- */
