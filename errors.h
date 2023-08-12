@@ -63,7 +63,7 @@ extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 
 /*-------------------------------------------------------- Functions --------------------------------------------------------*/
 
-bool validate_line();
+bool validate_line(char *line, int line_number);
 void handle_error(int line_number, int error_index);
 
 

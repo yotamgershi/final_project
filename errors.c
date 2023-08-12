@@ -48,7 +48,7 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 };
 /* -------------------------------------------------------- validate_line (main function) -------------------------------------------------------- */
 
-bool validate_line()
+bool validate_line(char *line, int line_number)
 {
     /*
         check if empty or comment
@@ -84,7 +84,7 @@ bool is_empty_line(char *line)
     return false;
 }
 
-bool is_valid_commas(char *operands) /* TODO: this function is wrong, it returns (null) */
+bool is_valid_commas(char *operands)
 {
     bool result = true;
     char *line_no_spaces = remove_spaces(operands);
