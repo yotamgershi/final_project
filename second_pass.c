@@ -305,7 +305,7 @@ void encode_label(char *word,char *label_name,int line_number,FILE *ext_file,int
     if(current_nude==NULL) /*didnt find label*/
     {
         *error=2;
-        printf("ERROR in line %d, symbol=%s doesn't defined",line_number,label_name);
+        printf("ERROR in line %d, symbol=%s doesn't defined\n",line_number,label_name);
         return;
     }
     
@@ -340,7 +340,7 @@ void print_entry_to_file(FILE *ent_file,char *ent_file_name,symbol_dict *symbol_
                 there_is_entry=true;
                 fprintf(ent_file, "%s    %d\n",get_name(head),get_address(head));
             }
-            else if(get_is_entry(head))
+            else if(get_is_entry(head)) /*and get_address(head) <= 0*/
             {
                printf("ERROR symbol: %s declerd as entry in line %d but has no definition in file\n",get_name(head),get_line_number(head));
                *error=2;
