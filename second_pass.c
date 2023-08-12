@@ -378,14 +378,14 @@ void print_binary_word_64(char *word,FILE *ob_file)
                       'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
                       '0','1','2','3','4','5','6','7','8','9','+','/'};
     int i;
-    int desimal_value=0;
+    int desimal_value_of_word=0;
     int bit_value=1; /* 2^0=1 */
     char c1,c2;
 
     for(i=0;i<BiW;i++,bit_value*=2)
-        desimal_value += ((int)word[i] - '0')*bit_value; /* word[i]='0' or '1' so ((int)word[i] - '0')= 0 or 1*/
+        desimal_value_of_word += ((int)word[i] - '0')*bit_value; /* word[i]='0' or '1' so ((int)word[i] - '0')= 0 or 1*/
  
-    c1=base64[desimal_value/64];
-    c2=base64[desimal_value%64];
+    c1=base64[desimal_value_of_word/64];
+    c2=base64[desimal_value_of_word%64];
     fprintf(ob_file, "%c%c\n",c1,c2);
 }
