@@ -50,12 +50,19 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 
 bool validate_line()
 {
+    /*
+        check if empty or comment
+        check if first word is reserved word
+            if yes - check if command is valid: instruction / entry / extern
+                if yes - validate the line
+                if no - handle error and return false 
+            if no - check if first word is legit lable
+                if no - handle error and return false
+                if yes - check if the rest of the line is valid
+                    if no - handle error and return false
+    */
     return false;
 }
-
-
-
-
 
 /* -------------------------------------------------------- line -------------------------------------------------------- */
 
@@ -79,14 +86,15 @@ bool is_empty_line(char *line)
 
 bool is_valid_commas(char *operands) /* TODO: this function is wrong, it returns (null) */
 {
-    bool result;
+    bool result = true;
     char *line_no_spaces = remove_spaces(operands);
-    if (strstr(line_no_spaces, ",,"))
+
+    if (strstr(line_no_spaces, ",,") || line_no_spaces[0] == ',' 
+        || line_no_spaces[strlen(line_no_spaces) - 1] == ',')
+    {
         result = false;
-    else if (line_no_spaces[0] == ',' || line_no_spaces[strlen(line_no_spaces) - 1] == ',')
-        result = false;
-    else 
-        result = true;
+    }
+
     free(line_no_spaces);
     return result;
 }
