@@ -43,7 +43,7 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 };
 
 
-/* line */
+/* -------------------------------------------------------- line -------------------------------------------------------- */
 
 bool is_empty_line(char *line)
 {
@@ -111,7 +111,7 @@ bool is_comment_line(char *line)
 }
 
 
-/* Labels*/
+/* -------------------------------------------------------- Labels -------------------------------------------------------- */
 bool is_reseved_word(char *label)
 {
     int i;
@@ -141,73 +141,73 @@ bool is_valid_label(char *label)
     return true;
 }
 
-/* operands */
 
-bool is_valid_src_type(char *cmd, char *src)
+/* -------------------------------------------------------- operands --------------------------------------------------------*/
+
+bool is_valid_type(char *cmd, char *dest, bool is_src)
 {
     int i;
-    char *valid_address_type, *addressing_type;
-
+    char *op_address_type, *addressing_type;
     for (i = 0; i <= 15; i++)
     {
-        if (strcmp(cmds[i].cmd, cmd))
-            valid_address_type = cmds[i].src_type;
+        if (!strcmp(cmds[i].cmd, cmd))
+            op_address_type = valid_address_type(i, is_src);
     }
-
-    addressing_type = find_address_type(src);
-    if (strstr(valid_address_type, addressing_type))
+    if ((addressing_type = find_address_type(dest)) == NULL)
+        return false;
+    if (strstr(op_address_type, addressing_type))
         return true;
     return false;
 }
 
-bool is_valid_dest_type(char *cmd, char *dest)
+char *valid_address_type(int i, bool is_src)
 {
-    int i;
-    char *valid_address_type, *addressing_type;
-    for (i = 0; i <= 15; i++)
-    {
-        if (strcmp(cmds[i].cmd, cmd))
-            valid_address_type = cmds[i].dest_type;
-    }
-    addressing_type = find_address_type(dest);
-    if (strstr(valid_address_type, addressing_type))
-        return true;
-    return false;
+    return is_src ? cmds[i].src_type : cmds[i].dest_type;
 }
 
 char *find_address_type(char *operand)
 {
     if (isdigit(operand[0]))
         return "1";
-    if (isalpha(operand[0])) /* maybe problem with invalid labels */
+    if (isalpha(operand[0])) 
         return "3";
     if (operand[0] == '@')
                 return "5";
     return NULL;
 }
 
+bool is_sign(char digit)
+{
+    return (digit == '-' || digit == '+');
+}
+
+bool is_valid_number_operand(char *operand)
+{
+    if (isdigit(*operand) || is_sign(*operand))
+    {
+        while (isdigit(*++operand))
+        ;
+        if (!*operand || isspace(*operand))
+            return true;
+    }
+
+    return false;
+}
+
+is_valid_register(char *reg)
+{
+    return (reg[0] == '@' && reg[1] == 'r' && reg[2] >= '0' && reg[2] <= '7');
+}
+
 bool is_valid_operand(char *operand)
 {
-    if (isdigit(*operand) || (*operand == '-' && isdigit(*(operand + 1)))) 
-    {
-        int num = atoi(operand);
-        if (num <= 512 && num >= -511)
-            return true;
-        return false;
-    }
-    
-    if (isalpha(operand[0]) && strlen(operand) <= 31) 
-    {
-        while (*operand) 
-        {
-            if (!isdigit(*operand) && !isalpha(*operand))
-                return false;
-            operand++;
-        }
+    if (is_valid_number_operand(operand))
         return true;
-    }
     
-    if (operand[0] == '@' && operand[1] == 'r' && operand[2] >= '0' && operand[2] <= '7')
+    if (is_valid_label_for_extern_and_entry(operand))
+        return true;
+    
+    if (is_valid_register(operand))
         return true;
 
     return false;
@@ -227,11 +227,11 @@ bool is_valid_operand_amount(char *line)
     command_index = cmd_index(first_word);
     if (command_index == EOF)
         return false;
-    if (command_index <= 8)
+    if (command_index <= 4)
         return(op_amount == 2);
-    if (command_index >= 9 && command_index <= 13)
+    if (command_index <= 13)
         return(op_amount == 1);
-    if (command_index >= 14)
+    if (command_index <= 15)
         return(op_amount == 0);
 
     return false;
@@ -244,7 +244,6 @@ int cmd_index(char *cmd)
     {
         if (!strcmp(cmd, cmds[i].cmd))
             return i;
-        
     }
     return EOF;
 }
@@ -256,10 +255,10 @@ int count_words(char *line)
     while (*line)
     {
         if ( isspace(*line) || *line == ',')
-            in_word = 0; /* we are not inside a word anymore */
+            in_word = 0;
         else if (!in_word)
         {
-            in_word = 1; /* we are inside a new word */
+            in_word = 1;
             word_count++;
         }
         line++;
@@ -322,7 +321,7 @@ bool is_valid_string(char *str)
     return false;
 }
 
-/* .data */
+/* -------------------------------------------------------- .data --------------------------------------------------------*/
 
 bool is_data_directive(char *line)
 {
@@ -363,7 +362,7 @@ bool is_valid_data(char *data)
     return has_digit;
 }
 
-/* .extern */
+/*-------------------------------------------------------- .extern --------------------------------------------------------*/
 
 bool is_valid_extern(char *line)
 {
@@ -378,11 +377,13 @@ bool is_valid_extern(char *line)
 
 bool is_valid_extern_operands(char *operands)
 {
-    char *operand = strtok(operands, ",");
+    char copy_operands[MAX_LINE], *operand;
+    strcpy(copy_operands, operands);
+    operand = strtok(copy_operands, ",");
     
     while (operand != NULL)
     {
-        if (!is_valid_label_for_extern(operand))
+        if (!is_valid_label_for_extern_and_entry(operand))
             return false;
         
         operand = strtok(NULL, ",");
@@ -404,7 +405,7 @@ bool is_extern_directive(char *line)
     return false;
 }
 
-bool is_valid_label_for_extern(char *label)
+bool is_valid_label_for_extern_and_entry(char *label) /* is_valid_label does the same and ':', seperate it.*/
 {
     int i, len;
 
@@ -424,7 +425,7 @@ bool is_valid_label_for_extern(char *label)
     return true;
 }
 
-/* .entry */
+/*-------------------------------------------------------- .entry -------------------------------------------------------- */
 
 bool is_valid_entry(char *line)
 {
@@ -443,7 +444,7 @@ bool is_valid_entry_operands(char *operands)
     
     while (operand != NULL)
     {
-        if (!is_valid_label_for_extern(operand))
+        if (!is_valid_label_for_extern_and_entry(operand))
             return false;
         
         operand = strtok(NULL, ",");

@@ -64,19 +64,17 @@ bool is_empty_line(char *line); /* Works fine */
 bool is_comment_line(char *line); /* Works fine */
 int count_words(char *line); /* Works fine */
 
-
 /* Labels*/
 bool is_reseved_word(char *label); /* Works fine */
 bool is_valid_label(char *label); /* Works fine */
 
 /* operands */
 char *find_address_type(char *operand);  /* works fine */
-bool is_valid_operand_amount(char *line); /* TODO: check with Maor */
+bool is_valid_type(char *cmd, char *dest, bool is_src); /* Works fine*/
+char *valid_address_type(int i, bool is_src); /* Works fine */
+bool is_valid_operand_amount(char *line); /* Works fine */
 int cmd_index(char *cmd); /* Works fine */
 bool is_valid_operand(char *operand); /* Works fine */
-bool is_valid_dest_type(char *cmd, char *dest); /* TODO: check with Maor*/
-bool is_valid_src_type(char *cmd, char *src); /* TODO: check with Maor*/
-
 
 /* .string */
 bool is_valid_string(char *str); /* Works fine */
@@ -86,22 +84,16 @@ bool is_string_directive (char *line); /* Works fine*/
 bool is_data_directive(char *line); /* Works fine */
 bool is_valid_data_operand(char *operand); /* Works fine */
 
-
 /* .extern */
-bool is_valid_extern(char *line); /* TODO: Test with Maor */
-bool is_valid_extern_operands(char *operands);
-bool is_extern_directive(char *line);
-bool is_valid_label_for_extern(char *label);
-
-
+bool is_valid_extern(char *line); /* Works fine */
+bool is_valid_extern_operands(char *operands); /* Works fine */
+bool is_extern_directive(char *line); /* Works fine */
+bool is_valid_label_for_extern_and_entry(char *label); /* Works fine */
 
 /* .entry */
-bool is_valid_entry(char *line); /* TODO: Test with Maor */
-bool is_valid_entry_operands(char *operands);
-bool is_entry_directive(char *line);
-bool entry_valid_operand_amount(char *line);
-
-
-
+bool is_valid_entry(char *line); /* Works fine */
+bool is_valid_entry_operands(char *operands); /* Works fine */
+bool is_entry_directive(char *line); /* Works fine */
+bool entry_valid_operand_amount(char *line); /* Works fine */
 
 #endif /* ERROR_H */
