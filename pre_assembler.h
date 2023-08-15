@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "macro_dict.h"
 
 #define MAX_LINE 82
@@ -76,9 +77,6 @@ int valid_macro_def(char * line);
  * @brief A boolean data type representing true or false values.
  */
 void print_long_line(FILE * input_file, FILE * dest_file,char *line);
-typedef enum {
-    false,
-    true
-} bool;
+
 
 #endif

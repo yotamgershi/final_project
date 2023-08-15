@@ -1,35 +1,25 @@
-"C:\Program Files\JetBrains\CLion 2023.1.4\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2023.1.4/bin/ninja/win/x64/ninja.exe" -G Ninja -S "C:\Users\yotamg\Desktop\Yotam\Computer Science\מעבדה בתכנות מערכות\Ubuntu16.04-OpenU (1)\Shared Folder\final_project" -B "C:\Users\yotamg\Desktop\Yotam\Computer Science\מעבדה בתכנות מערכות\Ubuntu16.04-OpenU (1)\Shared Folder\final_project\cmake-build-debug"
+"C:\Program Files\JetBrains\CLion 2023.1.4\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" -S C:\Users\yotamg\Documents\GitHub\final_project -B C:\Users\yotamg\Documents\GitHub\final_project\cmake-build-debug
 -- The C compiler identification is GNU 11.2.0
 -- The CXX compiler identification is GNU 11.2.0
 -- Detecting C compiler ABI info
-CMake Error:
-  Running
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/JetBrains/CLion 2023.1.4/bin/mingw/bin/gcc.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/JetBrains/CLion 2023.1.4/bin/mingw/bin/g++.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+CMake Error at CMakeLists.txt:6 (add_executable):
+  Cannot find source file:
 
-   'C:/PROGRA~1/JETBRA~1/CLION2~1.4/bin/ninja/win/x64/ninja.exe' '-C' 'C:/Users/yotamg/Desktop/Yotam/Computer Science/מעבדה בתכנות מערכות/Ubuntu16.04-OpenU (1)/Shared Folder/final_project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-7ifu5u' '-t' 'recompact'
-
-  failed with:
-
-   ninja: fatal: chdir to 'C:/Users/yotamg/Desktop/Yotam/Computer Science/????? ?????? ??????/Ubuntu16.04-OpenU (1)/Shared Folder/final_project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-7ifu5u' - Invalid argument
-
-
-
-CMake Error:
-  Running
-
-   'C:/PROGRA~1/JETBRA~1/CLION2~1.4/bin/ninja/win/x64/ninja.exe' '-C' 'C:/Users/yotamg/Desktop/Yotam/Computer Science/מעבדה בתכנות מערכות/Ubuntu16.04-OpenU (1)/Shared Folder/final_project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-7ifu5u' '-t' 'restat' 'build.ninja'
-
-  failed with:
-
-   ninja: fatal: chdir to 'C:/Users/yotamg/Desktop/Yotam/Computer Science/????? ?????? ??????/Ubuntu16.04-OpenU (1)/Shared Folder/final_project/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-7ifu5u' - Invalid argument
+    main.cpp
 
 
-
-CMake Error at C:/Program Files/JetBrains/CLion 2023.1.4/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile):
-  Failed to generate test project build system.
-Call Stack (most recent call first):
-  C:/Program Files/JetBrains/CLion 2023.1.4/bin/cmake/win/x64/share/cmake-3.25/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)
-  CMakeLists.txt:2 (project)
+CMake Error at CMakeLists.txt:6 (add_executable):
+  No SOURCES given to target: final_project
 
 
--- Configuring incomplete, errors occurred!
-See also "C:/Users/yotamg/Desktop/Yotam/Computer Science/מעבדה בתכנות מערכות/Ubuntu16.04-OpenU (1)/Shared Folder/final_project/cmake-build-debug/CMakeFiles/CMakeOutput.log".
+CMake Generate step failed.  Build files cannot be regenerated correctly.

@@ -7,7 +7,7 @@
 
 
 symbol_dict *first_pass(FILE * pre_assembled_file,int *DC,int *IC,int *error_first_pass);
-int validate_line(char *line, int line_number);
+bool validate_line(char *line, int line_number);
 
 int is_valid_length(char *line,int line_number,FILE *pre_assembled_file);
 

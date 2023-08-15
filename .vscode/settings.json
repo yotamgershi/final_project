@@ -16,6 +16,9 @@
         "xutility": "c",
         "symbol_dict.h": "c",
         "pre_assembler.h": "c",
-        "first_pass.h": "c"
+        "first_pass.h": "c",
+        "assembler.h": "c",
+        "stdlib.h": "c",
+        "second_pass.h": "c"
     }
 }
