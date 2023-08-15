@@ -8,22 +8,22 @@ bool handle_error(int line_number, int error_code)
 
 lookup_table cmds[] = 
 {
-    {"mov", "135", "35"},
-    {"cmp", "135", "135"},
-    {"add", "135", "35"},
-    {"sub", "135", "35"},
-    {"not", "", "35"},
-    {"clr", "", "35"},
-    {"lea", "3", "35"},
-    {"inc", "", "35"},
-    {"dec", "", "35"},
-    {"jmp", "", "35"},
-    {"bne","" , "35"},
-    {"red","" , "35"},
-    {"prn", "", "135"},
-    {"jsr","" ,"35"},
-    {"rts","" ,"" },
-    {"stop","" ,"" }
+    {"mov", "135", "35", 2},
+    {"cmp", "135", "135", 2},
+    {"add", "135", "35", 2},
+    {"sub", "135", "35", 2},
+    {"not", "", "35", 2},
+    {"clr", "", "35", 1},
+    {"lea", "3", "35", 2},
+    {"inc", "", "35", 2},
+    {"dec", "", "35", 2},
+    {"jmp", "", "35", 2},
+    {"bne","" , "35", 2},
+    {"red","" , "35", 2},
+    {"prn", "", "135", 2},
+    {"jsr","" ,"35", 2},
+    {"rts","" ,"", 0},
+    {"stop","" ,"", 0 }
 };
 
 error_item errors[NUM_ERRORS] = {
@@ -93,7 +93,7 @@ bool validate_line(char *line, int line_number)
         
         if (is_cmd(cmd))
             /* handle case of instruction */
-            if(!(error_index = is_valid_cmd_operands(operands)))
+            if(!(error_index = is_valid_cmd_operands(cmd, operands)))
                 handle_error(line_number, error_index);
 
         if (is_string_directive(line))
@@ -302,11 +302,22 @@ bool is_valid_operand(char *operand)
     return false;
 }
 
-error_code is_valid_cmd_operands(char *operands)
+error_code is_valid_cmd_operands(char *cmd, char *operands)
 {
-    char *operand = strtok(operands, SPACE_AND_COMMA);
+    char copy_operands[MAX_LINE];
+    char *operand;
+    int i;
 
-    if (!valid_operand_amount(operands))
+    strcpy(copy_operands, operands);
+    operand = strtok(copy_operands, SPACE_AND_COMMA);
+
+    for (i = 0; i <= 15; i++)
+    {
+        if (!strcmp(cmds[i].cmd, cmd))
+            break;
+    }
+
+    if (!(valid_operand_amount(operands) == cmds[i].num_of_operands))
         return INVALID_OPERAND_AMOUNT;
 
     while (operand)
@@ -319,14 +330,14 @@ error_code is_valid_cmd_operands(char *operands)
     return SUCCESS;
 }
 
-int valid_operand_amount(char *operands)
+int valid_operand_amount(char *line)
 {
-    char copy_operands[MAX_LINE], *first_word;
-    int command_index, op_amount = count_words(operands);
+    char copy_line[MAX_LINE], *first_word;
+    int command_index, op_amount = count_words(line);
 
 
-    strcpy(copy_operands, operands);
-    first_word = strtok(copy_operands, SPACE_AND_COMMA);
+    strcpy(copy_line, line);
+    first_word = strtok(copy_line, SPACE_AND_COMMA);
 
     if (!first_word)
         return true;

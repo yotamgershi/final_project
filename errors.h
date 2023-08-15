@@ -47,7 +47,8 @@ typedef enum
 
 typedef struct 
 {
-    char *cmd, *src_type, *dest_type; 
+    char *cmd, *src_type, *dest_type;
+    int num_of_operands; 
 } lookup_table;
 
 
@@ -90,7 +91,7 @@ char *valid_address_type(int i, bool is_src);
 int valid_operand_amount(char *operands); 
 int cmd_index(char *cmd); 
 bool is_valid_operand(char *operand); 
-error_code is_valid_cmd_operands(char *operands);
+error_code is_valid_cmd_operands(char *cmd, char *operands);
 bool is_valid_register(char *reg);
 
 /* .string */
