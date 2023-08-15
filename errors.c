@@ -81,22 +81,24 @@ bool validate_line(char *line, int line_number)
         return handle_error(line_number, INVALID_COMMAS);
     
     if (is_cmd(cmd))
-        /* handle case of instruction */
         if (error_index = is_valid_cmd_operands(cmd, operands))
             return handle_error(line_number, error_index);
 
     if (is_string_directive(line))
-        /* handle case of .string */
-        if (!(is_valid_string(cmd)))
+        if (!(is_valid_string(operands)))
             return handle_error(line_number, INVALID_STRING);
 
     if (is_data_directive(line))
-        /* handle case of .data */;
+        if (!(is_valid_data(operands)))
+            return handle_error(line_number, INVALID_DATA);
 
     if (is_extern_directive(line))
-        /* handle case otf .extern */;
+        if (!(is_valid_extern(line)))
+            return handle_error(line_number, INVALID_EXTERN);
+
     if (is_entry_directive(line))
-        /* handle case of .entry */;
+        if (!(is_valid_entry(operands)))
+            return handle_error(line_number, INVALID_ENTRY);
 
     return true;
 }
@@ -285,6 +287,9 @@ bool is_valid_register(char *reg)
 
 bool is_valid_operand(char *operand)
 {
+    if (!operand)
+        return false;
+
     if (is_valid_number_operand(operand))
         return true;
     
@@ -312,30 +317,27 @@ error_code is_valid_cmd_operands(char *cmd, char *operands)
             break;
     }
 
-    if (!(valid_operand_amount(operands) == cmds[i].num_of_operands))
+    if (!(valid_operand_amount(cmd, operands) == cmds[i].num_of_operands))
         return INVALID_OPERAND_AMOUNT;
 
     while (operand)
     {
-        operand = strtok(NULL, SPACE_AND_COMMA);
         if (!is_valid_operand(operand))
             return INVALID_OPERAND;
+        operand = strtok(NULL, SPACE_AND_COMMA);
     }
 
     return SUCCESS;
 }
 
-int valid_operand_amount(char *line)
+int valid_operand_amount(char *cmd, char *operands)
 {
     char copy_line[MAX_LINE], *first_word;
-    int command_index, op_amount = count_words(line);
+    int command_index, op_amount = count_words(operands);
 
-    strcpy(copy_line, line);
-    first_word = strtok(copy_line, SPACE_AND_COMMA);
+    strcpy(copy_line, operands);
 
-    if (!first_word)
-        return true;
-    command_index = cmd_index(first_word);
+    command_index = cmd_index(cmd);
     if (command_index == EOF)
         return EOF;
     if (command_index <= 4)
@@ -419,8 +421,15 @@ bool is_valid_string(char *str)
     char *first_quote = strchr(str, '"');
     char *last_quote = strrchr(str, '"');
     char *ptr;
+    int num_of_quotes = 0;
 
-    if (first_quote && last_quote && first_quote != last_quote) 
+    for (ptr = str; *ptr != '\0'; ptr++)
+    {
+        if (*ptr == '"')
+            num_of_quotes++;
+    }
+    
+    if (num_of_quotes == 2 && first_quote && last_quote && first_quote != last_quote) 
     {
         for (ptr = str; ptr < first_quote; ptr++) 
         {

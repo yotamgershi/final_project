@@ -88,7 +88,7 @@ bool is_label_directive(char *label);
 char *find_address_type(char *operand);  
 bool is_valid_type(char *cmd, char *dest, bool is_src); 
 char *valid_address_type(int i, bool is_src); 
-int valid_operand_amount(char *operands); 
+int valid_operand_amount(char *cmd, char *operands);
 int cmd_index(char *cmd); 
 bool is_valid_operand(char *operand); 
 error_code is_valid_cmd_operands(char *cmd, char *operands);
@@ -100,7 +100,7 @@ bool is_string_directive (char *line);
 
 /* .data */
 bool is_data_directive(char *line); 
-bool is_valid_data_operand(char *operand); 
+bool is_valid_data(char *operand); 
 
 /* .extern */
 bool is_valid_extern(char *line); 
