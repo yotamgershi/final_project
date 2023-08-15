@@ -27,6 +27,7 @@
 /* numeration to represent different error types. */
 typedef enum 
 {
+    SUCCESS,
     INVALID_COMMAS,
     RESERVED_WORD,
     INVALID_LABEL,
@@ -68,25 +69,29 @@ bool handle_error(int line_number, int error_index);
 
 
 /* line */
-bool is_valid_commas(char *operands);
+bool is_valid_commas(char *operands); /* add test if there are enough commas and they are placed right */
 char *remove_spaces(char *line);
 void skip_spaces(char *str);
 bool is_empty_line(char *line); 
 bool is_comment_line(char *line); 
 int count_words(char *line); 
+bool is_empty_or_comment(char *line);
 
 /* Labels*/
-bool is_reseved_word(char *label); 
+bool is_reseved_word(char *label);
 bool is_cmd(char *word);
-bool is_valid_label(char *label); 
+bool is_valid_label(char *label);
+bool is_label_directive(char *label);
 
 /* operands */
 char *find_address_type(char *operand);  
 bool is_valid_type(char *cmd, char *dest, bool is_src); 
 char *valid_address_type(int i, bool is_src); 
-bool is_valid_operand_amount(char *line); 
+int valid_operand_amount(char *operands); 
 int cmd_index(char *cmd); 
 bool is_valid_operand(char *operand); 
+error_code is_valid_cmd_operands(char *operands);
+bool is_valid_register(char *reg);
 
 /* .string */
 bool is_valid_string(char *str); 

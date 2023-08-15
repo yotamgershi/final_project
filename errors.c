@@ -1,8 +1,8 @@
 #include "errors.h"
 
-bool handle_error(int line_number, int error_index)
+bool handle_error(int line_number, int error_code)
 {
-    printf("in line %d: %s.", line_number, errors[error_index].message);
+    printf("in line %d: %s.", line_number, errors[error_code].message);
     return false;
 }
 
@@ -27,6 +27,7 @@ lookup_table cmds[] =
 };
 
 error_item errors[NUM_ERRORS] = {
+    {SUCCESS, ""},
     {INVALID_COMMAS, "Commas are not valid"},
     {RESERVED_WORD, "The word is not familier"},
     {INVALID_LABEL, "Label is invalid"},
@@ -45,7 +46,7 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 {
     "@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7",
     "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne", "red", "prn", "jsr", "rts", "stop",
-    "label", ".data", ".string", ".entry", ".extern"
+    ".data", ".string", ".entry", ".extern"
 };
 
 /* -------------------------------------------------------- validate_line (main function) -------------------------------------------------------- */
@@ -64,34 +65,61 @@ bool validate_line(char *line, int line_number)
                 if yes - check if the rest of the line is valid
                     if no - handle error and return false
     */
-    char copy_line[MAX_LINE], first_word[MAX_LINE];
+    char copy_line[MAX_LINE], first_word[MAX_LINE], second_word[MAX_LINE], 
+        *operands, *cmd = first_word;
+    error_code error_index;
+
     strcpy(copy_line, line); 
     
-    if (is_empty_line(line) || is_comment_line(line))
+    if (is_empty_or_comment(line))
         return true;
-    if (!(sscanf(copy_line, "%[^" SPACE_AND_COMMA "]", first_word) == 1))
-        handle_error(line_number, RESERVED_WORD);
-    if (is_reseved_word(first_word))
+
+    if (!(sscanf(copy_line, "%s %s", first_word, second_word) == 2))
+         return handle_error(line_number, RESERVED_WORD);
+
+    if (!is_reseved_word(cmd))
     {
-        if (is_cmd(first_word))
-            /* handle case of instruction */;
+        if (!is_valid_label(cmd))
+            return handle_error(line_number, INVALID_LABEL);
+        cmd = second_word;
+    }   
+
+    operands = strstr(line, cmd) + strlen(cmd);
+
+    if (is_reseved_word(cmd))
+    {
+        if (!is_valid_commas(operands))
+            return handle_error(line_number, INVALID_COMMAS);
+        
+        if (is_cmd(cmd))
+            /* handle case of instruction */
+            if(!(error_index = is_valid_cmd_operands(operands)))
+                handle_error(line_number, error_index);
+
         if (is_string_directive(line))
             /* handle case of .string */;
         if (is_data_directive(line))
             /* handle case of .data */;
         if (is_extern_directive(line))
-            /* handle case of .extern */;
+            /* handle case otf .extern */;
         if (is_entry_directive(line))
             /* handle case of .entry */;
     }
-    if (!is_valid_label(first_word))
-        handle_error(line_number, INVALID_LABEL);
-    strtok
+
     
     return false;
 }
 
 /* -------------------------------------------------------- line -------------------------------------------------------- */
+
+bool is_empty_or_comment(char *line)
+{
+    if (is_empty_line(line))
+        return true;
+    if (is_comment_line(line))
+        return true;
+    return false;
+}
 
 bool is_empty_line(char *line)
 {
@@ -123,6 +151,7 @@ bool is_valid_commas(char *operands)
     }
 
     free(line_no_spaces);
+
     return result;
 }
 
@@ -254,7 +283,7 @@ bool is_valid_number_operand(char *operand)
     return false;
 }
 
-is_valid_register(char *reg)
+bool is_valid_register(char *reg)
 {
     return (reg[0] == '@' && reg[1] == 'r' && reg[2] >= '0' && reg[2] <= '7');
 }
@@ -273,28 +302,52 @@ bool is_valid_operand(char *operand)
     return false;
 }
 
-bool is_valid_operand_amount(char *line)
+error_code is_valid_cmd_operands(char *operands)
 {
-    char copy_line[MAX_LINE], *first_word;
-    int command_index, op_amount = count_words(line);
+    char *operand = strtok(operands, SPACE_AND_COMMA);
+
+    if (!valid_operand_amount(operands))
+        return INVALID_OPERAND_AMOUNT;
+
+    while (operand)
+    {
+        operand = strtok(NULL, SPACE_AND_COMMA);
+        if (!is_valid_operand(operand))
+            return INVALID_OPERAND;  
+    }
+
+    return SUCCESS;
+}
+
+int valid_operand_amount(char *operands)
+{
+    char copy_operands[MAX_LINE], *first_word;
+    int command_index, op_amount = count_words(operands);
 
 
-    strcpy(copy_line, line);
-    first_word = strtok(copy_line, SPACE_AND_COMMA);
+    strcpy(copy_operands, operands);
+    first_word = strtok(copy_operands, SPACE_AND_COMMA);
 
     if (!first_word)
         return true;
     command_index = cmd_index(first_word);
     if (command_index == EOF)
-        return false;
+        return EOF;
     if (command_index <= 4)
-        return(op_amount == 2);
-    if (command_index <= 13)
-        return(op_amount == 1);
-    if (command_index <= 15)
-        return(op_amount == 0);
+    {
+        if (op_amount != 2)
+            op_amount = EOF;
+    }
+    else if (command_index <= 13)
+    {
+        if (op_amount != 1)
+            op_amount = EOF;
+    }
+    else
+        if (op_amount != 0)
+            op_amount = EOF;
 
-    return false;
+    return op_amount;
 }
 
 int cmd_index(char *cmd)
