@@ -64,7 +64,7 @@ extern char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD];
 /*-------------------------------------------------------- Functions --------------------------------------------------------*/
 
 bool validate_line(char *line, int line_number);
-void handle_error(int line_number, int error_index);
+bool handle_error(int line_number, int error_index);
 
 
 /* line */
@@ -77,6 +77,7 @@ int count_words(char *line);
 
 /* Labels*/
 bool is_reseved_word(char *label); 
+bool is_cmd(char *word);
 bool is_valid_label(char *label); 
 
 /* operands */

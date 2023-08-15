@@ -1,8 +1,9 @@
 #include "errors.h"
 
-void handle_error(int line_number, int error_index)
+bool handle_error(int line_number, int error_index)
 {
     printf("in line %d: %s.", line_number, errors[error_index].message);
+    return false;
 }
 
 lookup_table cmds[] = 
@@ -46,14 +47,16 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
     "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne", "red", "prn", "jsr", "rts", "stop",
     "label", ".data", ".string", ".entry", ".extern"
 };
+
 /* -------------------------------------------------------- validate_line (main function) -------------------------------------------------------- */
 
 bool validate_line(char *line, int line_number)
 {
     /*
         check if empty or comment
+            if yes - return true
         check if first word is reserved word
-            if yes - check if command is valid: instruction / entry / extern
+            if yes - check if command is valid: instruction / entry / extern / string / data
                 if yes - validate the line
                 if no - handle error and return false 
             if no - check if first word is legit lable
@@ -61,6 +64,30 @@ bool validate_line(char *line, int line_number)
                 if yes - check if the rest of the line is valid
                     if no - handle error and return false
     */
+    char copy_line[MAX_LINE], first_word[MAX_LINE];
+    strcpy(copy_line, line); 
+    
+    if (is_empty_line(line) || is_comment_line(line))
+        return true;
+    if (!(sscanf(copy_line, "%[^" SPACE_AND_COMMA "]", first_word) == 1))
+        handle_error(line_number, RESERVED_WORD);
+    if (is_reseved_word(first_word))
+    {
+        if (is_cmd(first_word))
+            /* handle case of instruction */;
+        if (is_string_directive(line))
+            /* handle case of .string */;
+        if (is_data_directive(line))
+            /* handle case of .data */;
+        if (is_extern_directive(line))
+            /* handle case of .extern */;
+        if (is_entry_directive(line))
+            /* handle case of .entry */;
+    }
+    if (!is_valid_label(first_word))
+        handle_error(line_number, INVALID_LABEL);
+    strtok
+    
     return false;
 }
 
@@ -132,14 +159,25 @@ bool is_comment_line(char *line)
     return (*line == ';');
 }
 
-
 /* -------------------------------------------------------- Labels -------------------------------------------------------- */
+
 bool is_reseved_word(char *label)
 {
     int i;
     for(i = 0; i < NUM_OF_RESERVED_WORDS; i++)
     {
         if (!strcmp(label, reserved_words[i]))
+            return true;
+    }
+    return false;
+}
+
+bool is_cmd(char *word)
+{
+    int i;
+    for(i = 0; i < NUM_OF_COMMANDS; i++)
+    {
+        if (!strcmp(word, cmds[i].cmd))
             return true;
     }
     return false;
@@ -303,7 +341,7 @@ void skip_spaces(char *line)
     *dst = '\0';
 }
 
-/* .string */
+/* -------------------------------------------------------- .string --------------------------------------------------------*/
 
 bool is_string_directive(char *line)
 {
@@ -492,6 +530,3 @@ bool entry_valid_operand_amount(char *line)
 {
     return (count_words(line) == 2);
 }
-
-
-
