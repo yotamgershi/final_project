@@ -97,6 +97,7 @@ bool is_valid_register(char *reg);
 /* .string */
 bool is_valid_string(char *str); 
 bool is_string_directive (char *line);
+bool two_quotes(char *str);
 
 /* .data */
 bool is_data_directive(char *line); 

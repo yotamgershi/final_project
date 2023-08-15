@@ -415,11 +415,8 @@ bool is_string_directive(char *line)
         return true;
     return false;
 }
-
-bool is_valid_string(char *str)
+bool two_quotes(char *str)
 {
-    char *first_quote = strchr(str, '"');
-    char *last_quote = strrchr(str, '"');
     char *ptr;
     int num_of_quotes = 0;
 
@@ -428,8 +425,23 @@ bool is_valid_string(char *str)
         if (*ptr == '"')
             num_of_quotes++;
     }
+
+    if (num_of_quotes != 2)
+        return false;
     
-    if (num_of_quotes == 2 && first_quote && last_quote && first_quote != last_quote) 
+    return true;
+
+}
+bool is_valid_string(char *str)
+{
+    char *first_quote = strchr(str, '"');
+    char *last_quote = strrchr(str, '"');
+    char *ptr;
+
+    if (!two_quotes(str))
+        return false;
+
+    if (first_quote && last_quote && first_quote != last_quote) 
     {
         for (ptr = str; ptr < first_quote; ptr++) 
         {
