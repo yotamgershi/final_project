@@ -2,7 +2,7 @@
 
 bool handle_error(int line_number, int error_code)
 {
-    printf("in line %d: %s.", line_number, errors[error_code].message);
+    printf("in line %d: %s.\n", line_number, errors[error_code].message);
     return false;
 }
 
@@ -32,7 +32,7 @@ error_item errors[NUM_ERRORS] = {
     {RESERVED_WORD, "The word is not familier"},
     {INVALID_LABEL, "Label is invalid"},
     {INVALID_OPERAND_TYPE, "Invalid operand type for command"},
-    {INVALID_OPERAND_AMOUNT, "Invalid operand amountfor command"},
+    {INVALID_OPERAND_AMOUNT, "Invalid operand amount for command"},
     {INVALID_OPERAND, "Invalid operand for command"},
     {INVALID_STRING, "Invalid string definition"},
     {INVALID_DATA, "Invalid data definition"},
@@ -53,18 +53,6 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 
 bool validate_line(char *line, int line_number)
 {
-    /* '
-        check if empty or comment
-            if yes - return true
-        check if first word is reserved word
-            if yes - check if command is valid: instruction / entry / extern / string / data
-                if yes - validate the line
-                if no - handle error and return false 
-            if no - check if first word is legit lable
-                if no - handle error and return false
-                if yes - check if the rest of the line is valid
-                    if no - handle error and return false
-    */
     char copy_line[MAX_LINE], first_word[MAX_LINE], second_word[MAX_LINE], 
         *operands, *cmd = first_word;
     error_code error_index;
@@ -84,30 +72,33 @@ bool validate_line(char *line, int line_number)
         cmd = second_word;
     }   
 
+    if (!is_reseved_word(cmd))
+        return handle_error(line_number, RESERVED_WORD);
+
     operands = strstr(line, cmd) + strlen(cmd);
 
-    if (is_reseved_word(cmd))
-    {
-        if (!is_valid_commas(operands))
-            return handle_error(line_number, INVALID_COMMAS);
-        
-        if (is_cmd(cmd))
-            /* handle case of instruction */
-            if(!(error_index = is_valid_cmd_operands(cmd, operands)))
-                handle_error(line_number, error_index);
-
-        if (is_string_directive(line))
-            /* handle case of .string */;
-        if (is_data_directive(line))
-            /* handle case of .data */;
-        if (is_extern_directive(line))
-            /* handle case otf .extern */;
-        if (is_entry_directive(line))
-            /* handle case of .entry */;
-    }
-
+    if (!is_valid_commas(operands))
+        return handle_error(line_number, INVALID_COMMAS);
     
-    return false;
+    if (is_cmd(cmd))
+        /* handle case of instruction */
+        if (error_index = is_valid_cmd_operands(cmd, operands))
+            return handle_error(line_number, error_index);
+
+    if (is_string_directive(line))
+        /* handle case of .string */
+        if (!(is_valid_string(cmd)))
+            return handle_error(line_number, INVALID_STRING);
+
+    if (is_data_directive(line))
+        /* handle case of .data */;
+
+    if (is_extern_directive(line))
+        /* handle case otf .extern */;
+    if (is_entry_directive(line))
+        /* handle case of .entry */;
+
+    return true;
 }
 
 /* -------------------------------------------------------- line -------------------------------------------------------- */
@@ -215,16 +206,20 @@ bool is_cmd(char *word)
 bool is_valid_label(char *label)
 {
     int i, len;
+
     if (label == NULL || strlen(label) > 31)
         return false;
+
     len = strlen(label);
     if (!isalpha(label[0]))
         return false;
+
     for (i = 1; i < len - 1; i++)
     {
         if (!isalnum(label[i])) 
             return false;
     }
+    
     if (label[len - 1] != ':')
         return false;
     return true;
@@ -324,7 +319,7 @@ error_code is_valid_cmd_operands(char *cmd, char *operands)
     {
         operand = strtok(NULL, SPACE_AND_COMMA);
         if (!is_valid_operand(operand))
-            return INVALID_OPERAND;  
+            return INVALID_OPERAND;
     }
 
     return SUCCESS;
@@ -334,7 +329,6 @@ int valid_operand_amount(char *line)
 {
     char copy_line[MAX_LINE], *first_word;
     int command_index, op_amount = count_words(line);
-
 
     strcpy(copy_line, line);
     first_word = strtok(copy_line, SPACE_AND_COMMA);
