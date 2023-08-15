@@ -53,7 +53,7 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 
 bool validate_line(char *line, int line_number)
 {
-    /*
+    /* '
         check if empty or comment
             if yes - return true
         check if first word is reserved word
