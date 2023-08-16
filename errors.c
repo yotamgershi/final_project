@@ -2,11 +2,7 @@
 
 bool handle_error(int line_number, int error_code)
 {
-<<<<<<< HEAD
-    printf("in line %d: %s.", line_number, errors[error_code].message);
-=======
     printf("in line %d: %s.\n", line_number, errors[error_code].message);
->>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
     return false;
 }
 
@@ -57,27 +53,6 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 
 bool validate_line(char *line, int line_number)
 {
-<<<<<<< HEAD
-    /*
-        check if empty or comment
-            if yes - return true
-        check if first word is reserved word
-            if yes - check if command is valid: instruction / entry / extern / string / data
-                if yes - validate the line
-                if no - handle error and return false 
-            if no - check if first word is legit lable
-                if no - handle error and return false
-                if yes - check if the rest of the line is valid
-                    if no - handle error and return false
-    */
-    char copy_line[MAX_LINE], first_word[MAX_LINE], second_word[MAX_LINE], 
-        *operands, *cmd = first_word;
-    error_code error_index;
-
-    strcpy(copy_line, line); 
-    
-    if (is_empty_or_comment(line))
-=======
     char copy_line[MAX_LINE], first_word[MAX_LINE], second_word[MAX_LINE], 
         *operands, *cmd = first_word;
     error_code error_index = SUCCESS;
@@ -85,7 +60,6 @@ bool validate_line(char *line, int line_number)
     strcpy(copy_line, line); 
     
     if (is_empty_or_comment(copy_line))
->>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
         return true;
 
     if (!(sscanf(copy_line, "%s %s", first_word, second_word) == 2))
@@ -98,32 +72,6 @@ bool validate_line(char *line, int line_number)
         cmd = second_word;
     }   
 
-<<<<<<< HEAD
-    operands = strstr(line, cmd) + strlen(cmd);
-
-    if (is_reseved_word(cmd))
-    {
-        if (!is_valid_commas(operands))
-            return handle_error(line_number, INVALID_COMMAS);
-        
-        if (is_cmd(cmd))
-            /* handle case of instruction */
-            if(!(error_index = is_valid_cmd_operands(operands)))
-                handle_error(line_number, error_index);
-
-        if (is_string_directive(line))
-            /* handle case of .string */;
-        if (is_data_directive(line))
-            /* handle case of .data */;
-        if (is_extern_directive(line))
-            /* handle case otf .extern */;
-        if (is_entry_directive(line))
-            /* handle case of .entry */;
-    }
-
-    
-    return false;
-=======
     if (!is_reseved_word(cmd))
         return handle_error(line_number, RESERVED_WORD);
 
@@ -153,7 +101,6 @@ bool validate_line(char *line, int line_number)
             return handle_error(line_number, INVALID_ENTRY);
 
     return true;
->>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
 }
 
 /* -------------------------------------------------------- line -------------------------------------------------------- */
@@ -361,28 +308,6 @@ bool is_valid_operand(char *operand)
     return false;
 }
 
-<<<<<<< HEAD
-error_code is_valid_cmd_operands(char *operands)
-{
-    char *operand = strtok(operands, SPACE_AND_COMMA);
-
-    if (!valid_operand_amount(operands))
-        return INVALID_OPERAND_AMOUNT;
-
-    while (operand)
-    {
-        operand = strtok(NULL, SPACE_AND_COMMA);
-        if (!is_valid_operand(operand))
-            return INVALID_OPERAND;  
-    }
-
-    return SUCCESS;
-}
-
-int valid_operand_amount(char *operands)
-{
-    char copy_operands[MAX_LINE], *first_word;
-=======
 error_code is_valid_cmd_operands(char *cmd, char *operands)
 {
     char copy_operands[MAX_LINE], *operand;
@@ -421,21 +346,11 @@ error_code is_valid_cmd_operands(char *cmd, char *operands)
 int valid_operand_amount(char *cmd, char *operands)
 {
     char copy_line[MAX_LINE], *first_word;
->>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
     int command_index, op_amount = count_words(operands);
 
     strcpy(copy_line, operands);
 
-<<<<<<< HEAD
-    strcpy(copy_operands, operands);
-    first_word = strtok(copy_operands, SPACE_AND_COMMA);
-
-    if (!first_word)
-        return true;
-    command_index = cmd_index(first_word);
-=======
     command_index = cmd_index(cmd);
->>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
     if (command_index == EOF)
         return EOF;
     if (command_index <= 4)
@@ -707,8 +622,4 @@ bool is_entry_directive(char *line)
 bool entry_valid_operand_amount(char *line) 
 {
     return (count_words(line) == 2);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b

@@ -87,20 +87,12 @@ bool is_label_directive(char *label);
 char *find_address_type(char *operand);  
 bool is_valid_type(char *cmd, char *dest, bool is_src); 
 char *valid_address_type(int i, bool is_src); 
-<<<<<<< HEAD
-int valid_operand_amount(char *operands); 
-int cmd_index(char *cmd); 
-bool is_valid_operand(char *operand); 
-error_code is_valid_cmd_operands(char *operands);
-bool is_valid_register(char *reg);
-=======
 int valid_operand_amount(char *cmd, char *operands);
 int cmd_index(char *cmd); 
 bool is_valid_operand(char *operand); 
 error_code is_valid_cmd_operands(char *cmd, char *operands);
 bool is_valid_register(char *reg);
 bool is_sign(char digit);
->>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
 
 /* .string */
 bool is_valid_string(char *str); 
