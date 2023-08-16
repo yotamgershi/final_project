@@ -59,7 +59,7 @@ bool validate_line(char *line, int line_number)
 
     strcpy(copy_line, line); 
     
-    if (is_empty_or_comment(line))
+    if (is_empty_or_comment(copy_line))
         return true;
 
     if (!(sscanf(copy_line, "%s %s", first_word, second_word) == 2))
@@ -75,7 +75,7 @@ bool validate_line(char *line, int line_number)
     if (!is_reseved_word(cmd))
         return handle_error(line_number, RESERVED_WORD);
 
-    operands = strstr(line, cmd) + strlen(cmd);
+    operands = strstr(copy_line, cmd) + strlen(cmd);
 
     if (!is_valid_commas(operands))
         return handle_error(line_number, INVALID_COMMAS);
@@ -93,7 +93,7 @@ bool validate_line(char *line, int line_number)
             return handle_error(line_number, INVALID_DATA);
 
     if (is_extern_directive(cmd))
-        if (!(is_valid_extern(line)))
+        if (!(is_valid_extern(copy_line)))
             return handle_error(line_number, INVALID_EXTERN);
 
     if (is_entry_directive(cmd))
