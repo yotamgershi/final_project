@@ -81,7 +81,7 @@ bool validate_line(char *line, int line_number)
         return handle_error(line_number, INVALID_COMMAS);
     
     if (is_cmd(cmd))
-        if (error_index = is_valid_cmd_operands(cmd, operands))
+        if ((error_index = is_valid_cmd_operands(cmd, operands)))
             return handle_error(line_number, error_index);
 
     if (is_string_directive(cmd))
@@ -345,7 +345,7 @@ error_code is_valid_cmd_operands(char *cmd, char *operands)
 
 int valid_operand_amount(char *cmd, char *operands)
 {
-    char copy_line[MAX_LINE], *first_word;
+    char copy_line[MAX_LINE];
     int command_index, op_amount = count_words(operands);
 
     strcpy(copy_line, operands);
