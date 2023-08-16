@@ -2,28 +2,32 @@
 
 bool handle_error(int line_number, int error_code)
 {
+<<<<<<< HEAD
     printf("in line %d: %s.", line_number, errors[error_code].message);
+=======
+    printf("in line %d: %s.\n", line_number, errors[error_code].message);
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
     return false;
 }
 
 lookup_table cmds[] = 
 {
-    {"mov", "135", "35"},
-    {"cmp", "135", "135"},
-    {"add", "135", "35"},
-    {"sub", "135", "35"},
-    {"not", "", "35"},
-    {"clr", "", "35"},
-    {"lea", "3", "35"},
-    {"inc", "", "35"},
-    {"dec", "", "35"},
-    {"jmp", "", "35"},
-    {"bne","" , "35"},
-    {"red","" , "35"},
-    {"prn", "", "135"},
-    {"jsr","" ,"35"},
-    {"rts","" ,"" },
-    {"stop","" ,"" }
+    {"mov", "135", "35", 2},
+    {"cmp", "135", "135", 2},
+    {"add", "135", "35", 2},
+    {"sub", "135", "35", 2},
+    {"not", "", "35", 2},
+    {"clr", "", "35", 1},
+    {"lea", "3", "35", 1},
+    {"inc", "", "35", 1},
+    {"dec", "", "35", 1},
+    {"jmp", "", "35", 1},
+    {"bne","" , "35", 1},
+    {"red","" , "35", 1},
+    {"prn", "", "135", 1},
+    {"jsr","" ,"35", 1},
+    {"rts","" ,"", 0},
+    {"stop","" ,"", 0 }
 };
 
 error_item errors[NUM_ERRORS] = {
@@ -32,7 +36,7 @@ error_item errors[NUM_ERRORS] = {
     {RESERVED_WORD, "The word is not familier"},
     {INVALID_LABEL, "Label is invalid"},
     {INVALID_OPERAND_TYPE, "Invalid operand type for command"},
-    {INVALID_OPERAND_AMOUNT, "Invalid operand amountfor command"},
+    {INVALID_OPERAND_AMOUNT, "Invalid operand amount for command"},
     {INVALID_OPERAND, "Invalid operand for command"},
     {INVALID_STRING, "Invalid string definition"},
     {INVALID_DATA, "Invalid data definition"},
@@ -53,6 +57,7 @@ char reserved_words[NUM_OF_RESERVED_WORDS][MAX_LEN_OF_RESERVED_WORD] =
 
 bool validate_line(char *line, int line_number)
 {
+<<<<<<< HEAD
     /*
         check if empty or comment
             if yes - return true
@@ -72,6 +77,15 @@ bool validate_line(char *line, int line_number)
     strcpy(copy_line, line); 
     
     if (is_empty_or_comment(line))
+=======
+    char copy_line[MAX_LINE], first_word[MAX_LINE], second_word[MAX_LINE], 
+        *operands, *cmd = first_word;
+    error_code error_index = SUCCESS;
+
+    strcpy(copy_line, line); 
+    
+    if (is_empty_or_comment(copy_line))
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
         return true;
 
     if (!(sscanf(copy_line, "%s %s", first_word, second_word) == 2))
@@ -84,6 +98,7 @@ bool validate_line(char *line, int line_number)
         cmd = second_word;
     }   
 
+<<<<<<< HEAD
     operands = strstr(line, cmd) + strlen(cmd);
 
     if (is_reseved_word(cmd))
@@ -108,6 +123,37 @@ bool validate_line(char *line, int line_number)
 
     
     return false;
+=======
+    if (!is_reseved_word(cmd))
+        return handle_error(line_number, RESERVED_WORD);
+
+    operands = strstr(copy_line, cmd) + strlen(cmd);
+
+    if (!is_valid_commas(operands))
+        return handle_error(line_number, INVALID_COMMAS);
+    
+    if (is_cmd(cmd))
+        if (error_index = is_valid_cmd_operands(cmd, operands))
+            return handle_error(line_number, error_index);
+
+    if (is_string_directive(cmd))
+        if (!(is_valid_string(operands)))
+            return handle_error(line_number, INVALID_STRING);
+
+    if (is_data_directive(cmd))
+        if (!(is_valid_data(operands)))
+            return handle_error(line_number, INVALID_DATA);
+
+    if (is_extern_directive(cmd))
+        if (!(is_valid_extern(copy_line)))
+            return handle_error(line_number, INVALID_EXTERN);
+
+    if (is_entry_directive(cmd))
+        if (!(is_valid_entry(operands)))
+            return handle_error(line_number, INVALID_ENTRY);
+
+    return true;
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
 }
 
 /* -------------------------------------------------------- line -------------------------------------------------------- */
@@ -215,16 +261,20 @@ bool is_cmd(char *word)
 bool is_valid_label(char *label)
 {
     int i, len;
+
     if (label == NULL || strlen(label) > 31)
         return false;
+
     len = strlen(label);
     if (!isalpha(label[0]))
         return false;
+
     for (i = 1; i < len - 1; i++)
     {
         if (!isalnum(label[i])) 
             return false;
     }
+    
     if (label[len - 1] != ':')
         return false;
     return true;
@@ -233,19 +283,23 @@ bool is_valid_label(char *label)
 
 /* -------------------------------------------------------- operands --------------------------------------------------------*/
 
-bool is_valid_type(char *cmd, char *dest, bool is_src)
+bool is_valid_type(char *cmd, char *operand, bool is_src)
 {
     int i;
     char *op_address_type, *addressing_type;
+
     for (i = 0; i <= 15; i++)
     {
         if (!strcmp(cmds[i].cmd, cmd))
             op_address_type = valid_address_type(i, is_src);
     }
-    if ((addressing_type = find_address_type(dest)) == NULL)
+
+    if ((addressing_type = find_address_type(operand)) == NULL)
         return false;
+
     if (strstr(op_address_type, addressing_type))
         return true;
+
     return false;
 }
 
@@ -256,10 +310,12 @@ char *valid_address_type(int i, bool is_src)
 
 char *find_address_type(char *operand)
 {
-    if (isdigit(operand[0]))
+    if (isdigit(operand[0]) || is_sign(operand[0]))
         return "1";
+
     if (isalpha(operand[0])) 
         return "3";
+
     if (operand[0] == '@')
                 return "5";
     return NULL;
@@ -290,6 +346,9 @@ bool is_valid_register(char *reg)
 
 bool is_valid_operand(char *operand)
 {
+    if (!operand)
+        return false;
+
     if (is_valid_number_operand(operand))
         return true;
     
@@ -302,6 +361,7 @@ bool is_valid_operand(char *operand)
     return false;
 }
 
+<<<<<<< HEAD
 error_code is_valid_cmd_operands(char *operands)
 {
     char *operand = strtok(operands, SPACE_AND_COMMA);
@@ -322,15 +382,60 @@ error_code is_valid_cmd_operands(char *operands)
 int valid_operand_amount(char *operands)
 {
     char copy_operands[MAX_LINE], *first_word;
+=======
+error_code is_valid_cmd_operands(char *cmd, char *operands)
+{
+    char copy_operands[MAX_LINE], *operand;
+    int i;
+    bool is_src = true;
+
+    strcpy(copy_operands, operands);
+    operand = strtok(copy_operands, SPACE_AND_COMMA);
+
+    for (i = 0; i <= 15; i++)
+    {
+        if (!strcmp(cmds[i].cmd, cmd))
+            break;
+    }
+
+    if (!(valid_operand_amount(cmd, operands) == cmds[i].num_of_operands))
+        return INVALID_OPERAND_AMOUNT;
+
+    is_src = (cmds[i].num_of_operands == 1) ? false : true;
+
+    while (operand)
+    {
+        if (!is_valid_operand(operand))
+            return INVALID_OPERAND;
+
+        if (!is_valid_type(cmd, operand, is_src))
+            return INVALID_OPERAND_TYPE;
+
+        is_src--;
+        operand = strtok(NULL, SPACE_AND_COMMA);
+    }
+
+    return SUCCESS;
+}
+
+int valid_operand_amount(char *cmd, char *operands)
+{
+    char copy_line[MAX_LINE], *first_word;
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
     int command_index, op_amount = count_words(operands);
 
+    strcpy(copy_line, operands);
 
+<<<<<<< HEAD
     strcpy(copy_operands, operands);
     first_word = strtok(copy_operands, SPACE_AND_COMMA);
 
     if (!first_word)
         return true;
     command_index = cmd_index(first_word);
+=======
+    command_index = cmd_index(cmd);
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
     if (command_index == EOF)
         return EOF;
     if (command_index <= 4)
@@ -409,11 +514,31 @@ bool is_string_directive(char *line)
     return false;
 }
 
+bool two_quotes(char *str)
+{
+    char *ptr;
+    int num_of_quotes = 0;
+
+    for (ptr = str; *ptr != '\0'; ptr++)
+    {
+        if (*ptr == '"')
+            num_of_quotes++;
+    }
+
+    if (num_of_quotes != 2)
+        return false;
+    
+    return true;
+
+}
 bool is_valid_string(char *str)
 {
     char *first_quote = strchr(str, '"');
     char *last_quote = strrchr(str, '"');
     char *ptr;
+
+    if (!two_quotes(str))
+        return false;
 
     if (first_quote && last_quote && first_quote != last_quote) 
     {
@@ -582,4 +707,8 @@ bool is_entry_directive(char *line)
 bool entry_valid_operand_amount(char *line) 
 {
     return (count_words(line) == 2);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b

@@ -4,17 +4,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+<<<<<<< HEAD
 #include <stdbool.h>
 #include "macro_dict.h"
+=======
+#include "mcro_dict.h"
+typedef enum {
+    false,
+    true
+} bool;
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
 
 #define MAX_LINE 82
+
 #define DELIMITER " \n\t"
 
 /**
  * @brief Pre-assemble an input assembly file and generate an output file.
  *
  * This function processes an input assembly file (with a .as extension) and generates an output file with a .am extension.
- * It performs pre-assembly tasks such as handling macros and resolving references to them.
+ * It performs pre-assembly tasks such as handling mcros and resolving references to them.
  *
  * @param file_name The name of the input assembly file.
  * @return A pointer to the generated output file, or NULL if an error occurs.
@@ -44,18 +53,18 @@ FILE *validate_fopen(const char *file_name, char *mode);
 char *add_suffix(char *file_name, char *suffix);
 
 /**
- * @brief Calculate the length of a macro definition in the input file.
+ * @brief Calculate the length of a mcro definition in the input file.
  *
- * This function calculates the length of a macro definition in the input file, starting from the given position.
+ * This function calculates the length of a mcro definition in the input file, starting from the given position.
  * The length includes the number of characters until the "endmcro" directive is encountered.
  *
  * @param input_file The input file to read from.
  * @param start_pos The starting position to begin calculating the length.
  * @param the curenet line
 
- * @return The length of the macro definition in bytes.
+ * @return The length of the mcro definition in bytes.
  */
-size_t calculate_macro_length(FILE *input_file, fpos_t start_pos,char line[]);
+size_t calculate_mcro_length(FILE *input_file, fpos_t start_pos,char line[]);
 /**
  * @brief cheak if a given string is instruction word
  *
@@ -71,12 +80,15 @@ int is_instruction(char * str);
  * @param line the line where the mcro declerd
  * @return true(1) or false(0) as needed 
  */
-int valid_macro_def(char * line);
+int valid_mcro_def(char * line);
 
 /**
  * @brief A boolean data type representing true or false values.
  */
 void print_long_line(FILE * input_file, FILE * dest_file,char *line);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
 
 #endif

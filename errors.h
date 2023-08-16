@@ -11,7 +11,6 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <string.h>
-#include "globals.h"
 
 #define NUM_OF_RESERVED_WORDS 29
 #define MAX_LEN_OF_RESERVED_WORD 31
@@ -47,7 +46,8 @@ typedef enum
 
 typedef struct 
 {
-    char *cmd, *src_type, *dest_type; 
+    char *cmd, *src_type, *dest_type;
+    int num_of_operands; 
 } lookup_table;
 
 
@@ -87,30 +87,40 @@ bool is_label_directive(char *label);
 char *find_address_type(char *operand);  
 bool is_valid_type(char *cmd, char *dest, bool is_src); 
 char *valid_address_type(int i, bool is_src); 
+<<<<<<< HEAD
 int valid_operand_amount(char *operands); 
 int cmd_index(char *cmd); 
 bool is_valid_operand(char *operand); 
 error_code is_valid_cmd_operands(char *operands);
 bool is_valid_register(char *reg);
+=======
+int valid_operand_amount(char *cmd, char *operands);
+int cmd_index(char *cmd); 
+bool is_valid_operand(char *operand); 
+error_code is_valid_cmd_operands(char *cmd, char *operands);
+bool is_valid_register(char *reg);
+bool is_sign(char digit);
+>>>>>>> 7b18500a1232882f1c581d92e83b961b14b3b68b
 
 /* .string */
 bool is_valid_string(char *str); 
-bool is_string_directive (char *line);
+bool is_string_directive (char *cmd);
+bool two_quotes(char *str);
 
 /* .data */
-bool is_data_directive(char *line); 
-bool is_valid_data_operand(char *operand); 
+bool is_data_directive(char *cmd); 
+bool is_valid_data(char *operand); 
 
 /* .extern */
 bool is_valid_extern(char *line); 
 bool is_valid_extern_operands(char *operands); 
-bool is_extern_directive(char *line); 
+bool is_extern_directive(char *cmd); 
 bool is_valid_label_for_extern_and_entry(char *label); 
 
 /* .entry */
 bool is_valid_entry(char *line); 
 bool is_valid_entry_operands(char *operands); 
-bool is_entry_directive(char *line); 
+bool is_entry_directive(char *cmd); 
 bool entry_valid_operand_amount(char *line); 
 
 #endif /* ERROR_H */
