@@ -55,7 +55,7 @@ bool validate_line(char *line, int line_number)
 {
     char copy_line[MAX_LINE], first_word[MAX_LINE], second_word[MAX_LINE], 
         *operands, *cmd = first_word;
-    error_code error_index;
+    error_code error_index = SUCCESS;
 
     strcpy(copy_line, line); 
     
@@ -230,19 +230,23 @@ bool is_valid_label(char *label)
 
 /* -------------------------------------------------------- operands --------------------------------------------------------*/
 
-bool is_valid_type(char *cmd, char *dest, bool is_src)
+bool is_valid_type(char *cmd, char *operand, bool is_src)
 {
     int i;
     char *op_address_type, *addressing_type;
+
     for (i = 0; i <= 15; i++)
     {
         if (!strcmp(cmds[i].cmd, cmd))
             op_address_type = valid_address_type(i, is_src);
     }
-    if ((addressing_type = find_address_type(dest)) == NULL)
+
+    if ((addressing_type = find_address_type(operand)) == NULL)
         return false;
+
     if (strstr(op_address_type, addressing_type))
         return true;
+
     return false;
 }
 
@@ -253,10 +257,12 @@ char *valid_address_type(int i, bool is_src)
 
 char *find_address_type(char *operand)
 {
-    if (isdigit(operand[0]))
+    if (isdigit(operand[0]) || is_sign(operand[0]))
         return "1";
+
     if (isalpha(operand[0])) 
         return "3";
+
     if (operand[0] == '@')
                 return "5";
     return NULL;
@@ -304,9 +310,9 @@ bool is_valid_operand(char *operand)
 
 error_code is_valid_cmd_operands(char *cmd, char *operands)
 {
-    char copy_operands[MAX_LINE];
-    char *operand;
+    char copy_operands[MAX_LINE], *operand;
     int i;
+    bool is_src = true;
 
     strcpy(copy_operands, operands);
     operand = strtok(copy_operands, SPACE_AND_COMMA);
@@ -320,10 +326,17 @@ error_code is_valid_cmd_operands(char *cmd, char *operands)
     if (!(valid_operand_amount(cmd, operands) == cmds[i].num_of_operands))
         return INVALID_OPERAND_AMOUNT;
 
+    is_src = (cmds[i].num_of_operands == 1) ? false : true;
+
     while (operand)
     {
         if (!is_valid_operand(operand))
             return INVALID_OPERAND;
+
+        if (!is_valid_type(cmd, operand, is_src))
+            return INVALID_OPERAND_TYPE;
+
+        is_src--;
         operand = strtok(NULL, SPACE_AND_COMMA);
     }
 

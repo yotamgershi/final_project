@@ -93,6 +93,7 @@ int cmd_index(char *cmd);
 bool is_valid_operand(char *operand); 
 error_code is_valid_cmd_operands(char *cmd, char *operands);
 bool is_valid_register(char *reg);
+bool is_sign(char digit);
 
 /* .string */
 bool is_valid_string(char *str); 
