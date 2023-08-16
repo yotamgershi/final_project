@@ -96,23 +96,23 @@ bool is_valid_register(char *reg);
 
 /* .string */
 bool is_valid_string(char *str); 
-bool is_string_directive (char *line);
+bool is_string_directive (char *cmd);
 bool two_quotes(char *str);
 
 /* .data */
-bool is_data_directive(char *line); 
+bool is_data_directive(char *cmd); 
 bool is_valid_data(char *operand); 
 
 /* .extern */
 bool is_valid_extern(char *line); 
 bool is_valid_extern_operands(char *operands); 
-bool is_extern_directive(char *line); 
+bool is_extern_directive(char *cmd); 
 bool is_valid_label_for_extern_and_entry(char *label); 
 
 /* .entry */
 bool is_valid_entry(char *line); 
 bool is_valid_entry_operands(char *operands); 
-bool is_entry_directive(char *line); 
+bool is_entry_directive(char *cmd); 
 bool entry_valid_operand_amount(char *line); 
 
 #endif /* ERROR_H */

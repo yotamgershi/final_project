@@ -84,19 +84,19 @@ bool validate_line(char *line, int line_number)
         if (error_index = is_valid_cmd_operands(cmd, operands))
             return handle_error(line_number, error_index);
 
-    if (is_string_directive(line))
+    if (is_string_directive(cmd))
         if (!(is_valid_string(operands)))
             return handle_error(line_number, INVALID_STRING);
 
-    if (is_data_directive(line))
+    if (is_data_directive(cmd))
         if (!(is_valid_data(operands)))
             return handle_error(line_number, INVALID_DATA);
 
-    if (is_extern_directive(line))
+    if (is_extern_directive(cmd))
         if (!(is_valid_extern(line)))
             return handle_error(line_number, INVALID_EXTERN);
 
-    if (is_entry_directive(line))
+    if (is_entry_directive(cmd))
         if (!(is_valid_entry(operands)))
             return handle_error(line_number, INVALID_ENTRY);
 
@@ -415,6 +415,7 @@ bool is_string_directive(char *line)
         return true;
     return false;
 }
+
 bool two_quotes(char *str)
 {
     char *ptr;
